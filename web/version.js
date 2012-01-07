@@ -1,1 +1,1 @@
-var dynmapversion = "${project.version}-${BUILD_NUMBER}";
+var dynmapversion = "0.28-675";
