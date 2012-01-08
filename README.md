@@ -8,7 +8,7 @@ This is a fork of the [main Dynmap repository](https://github.com/webbukkit/dynm
 
 _Note that these are the installation instructions for this fork, not the original Dynmap repository_
 
-Because I've been having trouble compiling the Dynmap source, the only way currently available to install this fork is to [download it](https://github.com/KenanY/dynmap/downloads), unzip it, then go to `dynmap/web` and overwrite your current Dynmap installation (found in `plugins/dynmap`) with that folder.
+Because I've been having trouble compiling the Dynmap source, I'm unable to build the entire plugin which would've allowed you (the server admin) to install my fork instead of the actual Dynmap. Nevertheless, you can still install my fork by [downloading it](https://github.com/KenanY/dynmap/downloads). Once you've unzipped the contents, overwrite the `web` folder of your current Dynmap installation (found at `plugins/dynmap`) with the `web` folder of this fork.
 
 ## What is Dynmap?
 
