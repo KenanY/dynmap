@@ -1,25 +1,64 @@
-# Eclipse stuff
+# OS generated files #
+######################
+Thumbs.db
+Desktop.ini
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+*~
+.directory
+
+# Java #
+########
+*.class
+*.jar
+*.war
+*.ear
+
+# Eclipse #
+###########
 /.classpath
 /.project
 /.settings
+*.pydevproject
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.externalToolBuilders/
+*.launch
+.cproject
+.buildpath
 
-# netbeans
+# NetBeans #
+############
 /nbproject
+nbbuild/
+nbdist/
+nbactions.xml
+nb-configuration.xml
 
-# we use maven!
+# Maven #
+#########
+/target
 /build.xml
 
-# maven
-/target
-
-# vim
+# vim #
+#######
 .*.sw[a-p]
+*.un~
+Session.vim
 
-# various other potential build files
+# potential build files #
+#########################
 /build
 /bin
 /dist
 /manifest.mf
-
-# Mac filesystem dust
-/.DS_Store
