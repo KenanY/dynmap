@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 componentconstructors['link'] = function(dynmap, configuration) {
 
   var dynmapLink = L.Class.extend({
