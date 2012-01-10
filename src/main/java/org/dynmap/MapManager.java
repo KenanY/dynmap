@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
@@ -86,6 +87,34 @@ public class MapManager {
     private DynmapScheduledThreadPoolExecutor render_pool;
     private static final int POOL_SIZE = 3;    
 
+    /* Touch event queues */
+    private static class TouchEvent {
+        int x, y, z;
+        String world;
+        String reason;
+        @Override
+        public int hashCode() {
+            return (x << 16) ^ (y << 24) ^ z;
+        }
+        @Override
+        public boolean equals(Object o) {
+            if(this == o) return true;
+            TouchEvent te = (TouchEvent)o;
+            if((x != te.x) || (y != te.y) || (z != te.z) || (world.equals(te.world) == false))
+                return false;
+            return true;
+        }        
+    }
+    private static class TouchVolumeEvent {
+        int xmin, ymin, zmin;
+        int xmax, ymax, zmax;
+        String world;
+        String reason;
+    }
+    private ConcurrentHashMap<TouchEvent, Object> touch_events = new ConcurrentHashMap<TouchEvent, Object>();
+    private LinkedList<TouchVolumeEvent> touch_volume_events = new LinkedList<TouchVolumeEvent>();
+    private Object touch_lock = new Object();
+    
     private HashMap<String, MapStats> mapstats = new HashMap<String, MapStats>();
     
     private static class MapStats {
@@ -94,8 +123,9 @@ public class MapManager {
         int updatedcnt;
         int transparentcnt;
     }
-    
+    /* synchronized using 'lock' */
     private HashMap<String, TriggerStats> trigstats = new HashMap<String, TriggerStats>();
+    
     
     private static class TriggerStats {
         long callsmade;
@@ -235,10 +265,10 @@ public class MapManager {
                 rendertype = RENDERTYPE_FULLRENDER;
             }
             else {
-                cxmin = (l.x - radius)>>4;
-                czmin = (l.z - radius)>>4;
-                cxmax = (l.x + radius+15)>>4;
-                czmax = (l.z + radius+15)>>4;
+                cxmin = ((int)l.x - radius)>>4;
+                czmin = ((int)l.z - radius)>>4;
+                cxmax = ((int)l.x + radius + 15)>>4;
+                czmax = ((int)l.z + radius + 15)>>4;
                 rendertype = RENDERTYPE_RADIUSRENDER;
             }
             this.mapname = mapname;
@@ -453,7 +483,7 @@ public class MapManager {
                     renderedmaps.addAll(map.getMapsSharingRender(world));
 
                     /* Now, prime the render queue */
-                    for (MapTile mt : map.getTiles(world, loc.x, loc.y, loc.z)) {
+                    for (MapTile mt : map.getTiles(world, (int)loc.x, (int)loc.y, (int)loc.z)) {
                         if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
                             found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
                             renderQueue.add(mt);
@@ -462,7 +492,7 @@ public class MapManager {
                     if(!updaterender) { /* Only add other seed points for fullrender */
                         /* Add spawn location too (helps with some worlds where 0,64,0 may not be generated */
                         DynmapLocation sloc = world.getSpawnLocation();
-                        for (MapTile mt : map.getTiles(world, sloc.x, sloc.y, sloc.z)) {
+                        for (MapTile mt : map.getTiles(world, (int)sloc.x, (int)sloc.y, (int)sloc.z)) {
                             if (!found.getFlag(mt.tileOrdinalX(), mt.tileOrdinalY())) {
                                 found.setFlag(mt.tileOrdinalX(), mt.tileOrdinalY(), true);
                                 renderQueue.add(mt);
@@ -470,7 +500,7 @@ public class MapManager {
                         }
                         if(world.seedloc != null) {
                             for(DynmapLocation seed : world.seedloc) {
-                                for (MapTile mt : map.getTiles(world, seed.x, seed.y, seed.z)) {
+                                for (MapTile mt : map.getTiles(world, (int)seed.x, (int)seed.y, (int)seed.z)) {
                                     if (!found.getFlag(mt.tileOrdinalX(),mt.tileOrdinalY())) {
                                         found.setFlag(mt.tileOrdinalX(),mt.tileOrdinalY(), true);
                                         renderQueue.add(mt);
@@ -685,6 +715,13 @@ public class MapManager {
             }
             scheduleDelayedJob(this, zoomout_period*1000);
             Debug.debug("DoZoomOutProcessing finished");
+        }
+    }
+    
+    private class DoTouchProcessing implements Runnable {
+        public void run() {
+            processTouchEvents();
+            scheduleDelayedJob(this, 1000); /* Once per second */
         }
     }
     
@@ -1010,62 +1047,29 @@ public class MapManager {
         }
     }
 
-    public int touch(DynmapLocation l, String reason) {
-        return touch(l.world, l.x, l.y, l.z, reason);
-    }
-    
-    public int touch(String wname, int x, int y, int z, String reason) {
-        DynmapWorld world = getWorld(wname);
-        if (world == null)
-            return 0;
-        int invalidates = 0;
-        for (int i = 0; i < world.maps.size(); i++) {
-            MapTile[] tiles = world.maps.get(i).getTiles(world, x, y, z);
-            for (int j = 0; j < tiles.length; j++) {
-                if(invalidateTile(tiles[j]))
-                    invalidates++;
-            }
-        }
-        if(reason != null) {
-            TriggerStats ts = trigstats.get(reason);
-            if(ts == null) {
-                ts = new TriggerStats();
-                trigstats.put(reason, ts);
-            }
-            ts.callsmade++;
-            if(invalidates > 0) {
-                ts.callswithtiles++;
-                ts.tilesqueued += invalidates;
-            }
-        }
-        return invalidates;
+    public void touch(String wname, int x, int y, int z, String reason) {
+        TouchEvent evt = new TouchEvent();
+        evt.world = wname;
+        evt.x = x;
+        evt.y = y;
+        evt.z = z;
+        evt.reason = reason;
+        touch_events.putIfAbsent(evt, reason);
     }
 
-    public int touchVolume(String wname, int minx, int miny, int minz, int maxx, int maxy, int maxz, String reason) {
-        DynmapWorld world = getWorld(wname);
-        if (world == null)
-            return 0;
-        int invalidates = 0;
-        for (int i = 0; i < world.maps.size(); i++) {
-            MapTile[] tiles = world.maps.get(i).getTiles(world, minx, miny, minz, maxx, maxy, maxz);
-            for (int j = 0; j < tiles.length; j++) {
-                if(invalidateTile(tiles[j]))
-                    invalidates++;
-            }
+    public void touchVolume(String wname, int minx, int miny, int minz, int maxx, int maxy, int maxz, String reason) {
+        TouchVolumeEvent evt = new TouchVolumeEvent();
+        evt.world = wname;
+        evt.xmin = minx;
+        evt.xmax = maxx;
+        evt.ymin = miny;
+        evt.ymax = maxy;
+        evt.zmin = minz;
+        evt.zmax = maxz;
+        evt.reason = reason;
+        synchronized(touch_lock) {
+            touch_volume_events.add(evt);
         }
-        if(reason != null) {
-            TriggerStats ts = trigstats.get(reason);
-            if(ts == null) {
-                ts = new TriggerStats();
-                trigstats.put(reason, ts);
-            }
-            ts.callsmade++;
-            if(invalidates > 0) {
-                ts.callswithtiles++;
-                ts.tilesqueued += invalidates;
-            }
-        }
-        return invalidates;
     }
 
     public boolean invalidateTile(MapTile tile) {
@@ -1089,6 +1093,7 @@ public class MapManager {
         tileQueue.start();
         scheduleDelayedJob(new DoZoomOutProcessing(), 60000);
         scheduleDelayedJob(new CheckWorldTimes(), 5000);
+        scheduleDelayedJob(new DoTouchProcessing(), 1000);
         /* Resume pending jobs */
         for(FullWorldRenderState job : active_renders.values()) {
             scheduleDelayedJob(job, 5000);
@@ -1399,6 +1404,101 @@ public class MapManager {
             if(pn.equals(job.player)) {
                 job.sender = p;
             }
+        }
+    }
+    
+    /**
+     * Process touch events
+     */
+    private void processTouchEvents() {
+        ArrayList<TouchEvent> te = null;
+        ArrayList<TouchVolumeEvent> tve = null;
+
+        if(touch_events.isEmpty() == false) {
+            te = new ArrayList<TouchEvent>(touch_events.keySet());
+            for(int i = 0; i < te.size(); i++) {
+                touch_events.remove(te.get(i));
+            }
+        }
+
+        synchronized(touch_lock) {
+            if(touch_volume_events.isEmpty() == false) {
+                tve = new ArrayList<TouchVolumeEvent>(touch_volume_events);
+                touch_volume_events.clear();
+            }
+        }
+        DynmapWorld world = null;
+        String wname = "";
+
+        /* If any touch events, process them */
+        if(te != null) {
+            for(TouchEvent evt : te) {
+                int invalidates = 0;
+                /* If different world, look it up */
+                if(evt.world.equals(wname) == false) {
+                    wname = evt.world;
+                    world = getWorld(wname);
+                }
+                if(world == null) continue;
+                for (int i = 0; i < world.maps.size(); i++) {
+                    MapTile[] tiles = world.maps.get(i).getTiles(world, evt.x, evt.y, evt.z);
+                    for (int j = 0; j < tiles.length; j++) {
+                        if(invalidateTile(tiles[j]))
+                            invalidates++;
+                    }
+                }
+                if(evt.reason != null) {
+                    synchronized(lock) {
+                        TriggerStats ts = trigstats.get(evt.reason);
+                        if(ts == null) {
+                            ts = new TriggerStats();
+                            trigstats.put(evt.reason, ts);
+                        }
+                        ts.callsmade++;
+                        if(invalidates > 0) {
+                            ts.callswithtiles++;
+                            ts.tilesqueued += invalidates;
+                        }
+                    }
+                }
+            }
+            te.clear(); /* Clean up set */
+        }
+
+        /* If any volume touches */
+        if(tve != null) {
+            for(TouchVolumeEvent evt : tve) {
+                /* If different world, look it up */
+                if(evt.world.equals(wname) == false) {
+                    wname = evt.world;
+                    world = getWorld(wname);
+                }
+                if(world == null) continue;
+                int invalidates = 0;
+                for (int i = 0; i < world.maps.size(); i++) {
+                    MapTile[] tiles = world.maps.get(i).getTiles(world, evt.xmin, evt.ymin, evt.zmin, evt.xmax, evt.ymax, evt.zmax);
+                    for (int j = 0; j < tiles.length; j++) {
+                        if(invalidateTile(tiles[j]))
+                            invalidates++;
+                    }
+                }
+                if(evt.reason != null) {
+                    synchronized(lock) {
+                        TriggerStats ts = trigstats.get(evt.reason);
+                        if(ts == null) {
+                            ts = new TriggerStats();
+                            trigstats.put(evt.reason, ts);
+                        }
+                        ts.callsmade++;
+                        if(invalidates > 0) {
+                            ts.callswithtiles++;
+                            ts.tilesqueued += invalidates;
+                        }
+                    }
+                }
+            }
+            /* Clean up */
+            tve.clear();
         }
     }
 }

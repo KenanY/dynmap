@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.ChunkSnapshot;
-import org.dynmap.DynmapLocation;
 
 public class SnapshotCache {
     private CacheHashMap snapcache;
@@ -49,23 +48,8 @@ public class SnapshotCache {
         snapcache = new CacheHashMap(max_size);
         refqueue = new ReferenceQueue<ChunkSnapshot>();
     }
-    private String getKey(DynmapLocation loc) {
-        return loc.world + ":" + (loc.x>>4) + ":" + (loc.z>>4);
-    }
     private String getKey(String w, int cx, int cz) {
         return w + ":" + cx + ":" + cz;
-    }
-    /**
-     * Invalidate cached snapshot, if in cache
-     */
-    public void invalidateSnapshot(DynmapLocation loc) {
-        String key = getKey(loc);
-        CacheRec rec = snapcache.remove(key);
-        if(rec != null) {
-            snapcache.reverselookup.remove(rec.ref);
-            rec.ref.clear();
-        }
-        processRefQueue();
     }
     /**
      * Invalidate cached snapshot, if in cache
@@ -77,7 +61,7 @@ public class SnapshotCache {
             snapcache.reverselookup.remove(rec.ref);
             rec.ref.clear();
         }
-        processRefQueue();
+        //processRefQueue();
     }
     /**
      * Invalidate cached snapshot, if in cache
@@ -93,7 +77,7 @@ public class SnapshotCache {
                 }
             }
         }
-        processRefQueue();
+        //processRefQueue();
     }
     /**
      * Look for chunk snapshot in cache
