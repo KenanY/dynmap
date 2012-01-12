@@ -17,7 +17,7 @@ _Note that these are the installation instructions for this fork, not the origin
 
 Because I've been having trouble compiling the Dynmap source, I'm unable to build the entire plugin which would've allowed you (the server admin) to install my fork instead of the actual Dynmap. Nevertheless, you can still install my fork: 
 
-* I'll assume that you have the [lastest recommended build of Bukkit](http://ci.bukkit.org/job/dev-CraftBukkit/Recommended/), you've installed the lastest stable version of Dynmap ([0.29.2](http://webbukkit.org/jenkins/public/dynmap/dynmap-0.29.2-bin.zip)) successfully, and that directory your server is located is called `minecraft_server` (this is only for instructiom purposes, the directory name doesn't matter to Bukkit)
+* I'll assume that you have the [latest recommended build of Bukkit](http://ci.bukkit.org/job/dev-CraftBukkit/Recommended/), you've installed the latest stable version of Dynmap ([0.29.2](http://webbukkit.org/jenkins/public/dynmap/dynmap-0.29.2-bin.zip)) successfully, and that directory your server is located is called `minecraft_server` (this is only for instruction purposes, the directory name doesn't matter to Bukkit)
 * [Download my fork](https://github.com/KenanY/dynmap/downloads)
 * Unzip the contents
 * Copy the contents of the `web` folder (from my fork) into `minecraft_server/plugins/dynmap/web`
@@ -25,7 +25,7 @@ Because I've been having trouble compiling the Dynmap source, I'm unable to buil
 * Run your server
 * Point your browser to `http://localhost:8123/` (the default Dynmap port is 8123)
 
-If the map is shown properly, then you've done everything write (or my fork has an error). Make sure you're using a **modern web browser**. I personally test my changes on the latest Google Chrome and the lastest Mozzila Firefox Nightly build. This doesn't mean that other browsers won't work, of course. The latest Safari, Opera 11, and Internet Explorer 7 or higher should (hopefully) fair well in rendering your maps.
+If the map is shown properly, then you've done everything write (or my fork has an error). Make sure you're using a **modern web browser**. I personally test my changes on the latest Mozilla Firefox [Nightly](http://nightly.mozilla.org/) build and the latest [Google Chrome][]. This doesn't mean that other browsers won't work, of course. The latest [Safari][], [Opera 11][Opera], and [Internet Explorer][] 7 or higher should all (hopefully) fair well in loading your maps.
 
 ## What is Dynmap?
 [Dynmap][] was started by k-zed as a plugin for hMod. The plugin was ported to [Bukkit][] soon after Bukkit was released. The current version of Dynmap provides an in-browser map, like [Google Maps][], of your [Minecraft][] world. It updates the map in realtime while you have your browser opened and shows the current players, regions and in-game messages on top of the map. It also allows viewers of the map to chat from within their browser with players in-game.
@@ -45,3 +45,7 @@ If the map is shown properly, then you've done everything write (or my fork has 
    [Minecraft]: https://minecraft.net/
    [normalize.css]: http://necolas.github.com/normalize.css/
    [mebibyte]: https://en.wikipedia.org/wiki/Mebibyte
+   [Google Chrome]: http://www.google.com/chrome/
+   [Safari]: http://www.apple.com/safari/
+   [Opera]: http://www.opera.com/browser/
+   [Internet Explorer]: http://www.microsoft.com/windows/internet-explorer/
