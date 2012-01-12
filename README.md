@@ -4,13 +4,13 @@
 This is a fork of the [main Dynmap repository](https://github.com/webbukkit/dynmap). This fork focuses on the web front-end of Dynmap, instead of the Java that's working behind the scenes. Minifying CSS and JavaScript files is one thing that should come to mind.
 
 ### What's different?
-* Moved `charset` to the top of `index.html` because it should be found in the first [mebibyte][] - d09b21a3dffb9c20b21c61db3cb0ced9bbe37725
-* Removed unnecessary whitespace in both `index.html` and the CSS files - d09b21a3dffb9c20b21c61db3cb0ced9bbe37725
-* Moved JavaScript to the bottom of `index.html` so that the page content can load first. Although this is a tile map anyways, it's part of my personal standards - f5f51cc5b77e493fb83dfb6b202746e5d5659e83
-* Use Google CDN's jQuery because it's likely to have been cached previously - 976a15433f0805e1bd8589c8c3c6096de4947ae6
-* Combined CSS files so that less files are loaded - 976a15433f0805e1bd8589c8c3c6096de4947ae6
-* Minified CSS files to save a few bytes and thus maps load faster - 38f4c96
-* Added [normalize.css][] to retain useful browser defaults and include several common fixes to improve cross-browser styling consistency - 095a5f8818dae21012e11825f9523f9e8822b383
+* Moved `charset` to the top of `index.html` because it should be found in the first [mebibyte][]
+* Removed unnecessary whitespace in both `index.html` and the CSS files
+* Moved JavaScript to the bottom of `index.html` so that the page content can load first. Although this is a tile map anyways, it's part of my personal standards
+* Use Google CDN's jQuery because it's likely to have been cached previously
+* Combined CSS files so that less files are loaded
+* Minified CSS files to save a few bytes and thus maps load faster
+* Added [normalize.css][] to retain useful browser defaults and include several common fixes to improve cross-browser styling consistency
 
 ### Installation
 _Note that these are the installation instructions for this fork, not the original Dynmap repository_
