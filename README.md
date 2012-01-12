@@ -16,6 +16,7 @@ This is a fork of the [main Dynmap repository](https://github.com/webbukkit/dynm
 _Note that these are the installation instructions for this fork, not the original Dynmap repository_
 
 Because I've been having trouble compiling the Dynmap source, I'm unable to build the entire plugin which would've allowed you (the server admin) to install my fork instead of the actual Dynmap. Nevertheless, you can still install my fork: 
+
 * I'll assume that you have the [lastest recommended build of Bukkit](http://ci.bukkit.org/job/dev-CraftBukkit/Recommended/), you've installed the lastest stable version of Dynmap ([0.29.2](http://webbukkit.org/jenkins/public/dynmap/dynmap-0.29.2-bin.zip)) successfully, and that directory your server is located is called `minecraft_server` (this is only for instructiom purposes, the directory name doesn't matter to Bukkit)
 * [Download my fork](https://github.com/KenanY/dynmap/downloads)
 * Unzip the contents
