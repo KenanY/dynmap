@@ -4,6 +4,7 @@ import static org.dynmap.JSONUtils.s;
 
 import org.dynmap.Color;
 import org.dynmap.ConfigurationNode;
+import org.dynmap.DynmapCore;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
 import org.dynmap.utils.MapChunkCache;
@@ -19,10 +20,10 @@ public class TexturePackHDShader implements HDShader {
     private boolean waterbiomeshaded;
     private boolean bettergrass;
     
-    public TexturePackHDShader(ConfigurationNode configuration) {
+    public TexturePackHDShader(DynmapCore core, ConfigurationNode configuration) {
         tpname = configuration.getString("texturepack", "minecraft");
         name = configuration.getString("name", tpname);
-        tp = TexturePack.getTexturePack(tpname);
+        tp = TexturePack.getTexturePack(core, tpname);
         biome_shaded = configuration.getBoolean("biomeshaded", true);
         swamp_shaded = configuration.getBoolean("swampshaded", MapManager.mapman.getSwampShading());
         waterbiomeshaded = configuration.getBoolean("waterbiomeshaded", MapManager.mapman.getWaterBiomeShading());
@@ -80,7 +81,6 @@ public class TexturePackHDShader implements HDShader {
         boolean do_swamp_shading;
         boolean do_water_shading;
         boolean do_better_grass;
-        private boolean has_hit;
         
         private ShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
@@ -101,7 +101,6 @@ public class TexturePackHDShader implements HDShader {
             do_swamp_shading = do_biome_shading && swamp_shaded;
             do_water_shading = do_biome_shading && waterbiomeshaded;
             do_better_grass = bettergrass;
-            has_hit = false;
         }
         /**
          * Get our shader
@@ -131,7 +130,6 @@ public class TexturePackHDShader implements HDShader {
             for(int i = 0; i < color.length; i++)
                 color[i].setTransparent();
             lastblkid = 0;
-            has_hit = false;
         }
         
         /**
@@ -151,8 +149,6 @@ public class TexturePackHDShader implements HDShader {
             scaledtp.readColor(ps, mapiter, c, blocktype, lastblocktype, ShaderState.this);
 
             if (c.getAlpha() > 0) {
-                has_hit = true;
-                int subalpha = ps.getSubmodelAlpha();
                 /* Scale brightness depending upon face */
                 switch(ps.getLastBlockStep()) {
                     case X_MINUS:

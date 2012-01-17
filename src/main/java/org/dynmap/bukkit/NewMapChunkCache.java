@@ -1,4 +1,4 @@
-package org.dynmap.utils;
+package org.dynmap.bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -14,10 +14,13 @@ import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.ChunkSnapshot;
 import org.dynmap.DynmapChunk;
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.DynmapWorld;
 import org.dynmap.Log;
 import org.dynmap.MapManager;
+import org.dynmap.common.BiomeMap;
+import org.dynmap.utils.MapChunkCache;
+import org.dynmap.utils.MapIterator;
 import org.dynmap.utils.MapIterator.BlockStep;
 
 /**
@@ -37,6 +40,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private static final int MAX_TICKLIST = 20000;
 
     private World w;
+    private DynmapWorld dw;
     private Object craftworld;
     private List<DynmapChunk> chunks;
     private ListIterator<DynmapChunk> iterator;
@@ -50,7 +54,7 @@ public class NewMapChunkCache implements MapChunkCache {
     private boolean do_save = false;
     private boolean isempty = true;
     private ChunkSnapshot[] snaparray; /* Index = (x-x_min) + ((z-z_min)*x_dim) */
-    private Biome[][] snapbiomes;   /* Biome cache - getBiome() is expensive */
+    private BiomeMap[][] snapbiomes;   /* Biome cache - getBiome() is expensive */
     private TreeSet<?> ourticklist;
     
     private int chunks_read;    /* Number of chunks actually loaded */
@@ -62,6 +66,8 @@ public class NewMapChunkCache implements MapChunkCache {
     private static final BlockStep unstep[] = { BlockStep.X_MINUS, BlockStep.Y_MINUS, BlockStep.Z_MINUS,
         BlockStep.X_PLUS, BlockStep.Y_PLUS, BlockStep.Z_PLUS };
 
+    private static BiomeMap[] biome_to_bmap;
+    
     /**
      * Iterator for traversing map chunk cache (base is for non-snapshot)
      */
@@ -110,15 +116,20 @@ public class NewMapChunkCache implements MapChunkCache {
         public final int getBlockEmittedLight() {
             return snap.getBlockEmittedLight(bx, y, bz);
         }
-        public final Biome getBiome() {
-            Biome[] b = snapbiomes[chunkindex];
+        public final BiomeMap getBiome() {
+            BiomeMap[] b = snapbiomes[chunkindex];
             if(b == null) {
-                b = snapbiomes[chunkindex] = new Biome[256];
+                b = snapbiomes[chunkindex] = new BiomeMap[256];
             }
             int off = bx + (bz << 4);
-            Biome bio = b[off];
+            BiomeMap bio = b[off];
             if(bio == null) {
-                bio = b[off] = snap.getBiome(bx, bz);
+                Biome bb = snap.getBiome(bx, bz);
+                if(bb != null)
+                    bio = biome_to_bmap[bb.ordinal()];
+                else
+                    bio = BiomeMap.NULL;
+                b[off] = bio;
             }
             return bio;
         }
@@ -398,14 +409,14 @@ public class NewMapChunkCache implements MapChunkCache {
             init = true;
         }
     }
-    @SuppressWarnings({ "rawtypes" })
-    public void setChunks(World w, List<DynmapChunk> chunks) {
-        this.w = w;
+    public void setChunks(BukkitWorld dw, List<DynmapChunk> chunks) {
+        this.dw = dw;
+        this.w = dw.getWorld();
         if((getworldhandle != null) && (craftworld == null)) {
             try {
                 craftworld = getworldhandle.invoke(w);   /* World.getHandle() */
                 if(ticklist != null)
-                    ourticklist = (TreeSet)ticklist.get(craftworld);
+                    ourticklist = (TreeSet<?>)ticklist.get(craftworld);
             } catch (Exception x) {
             }
         }
@@ -435,7 +446,7 @@ public class NewMapChunkCache implements MapChunkCache {
         }
     
         snaparray = new ChunkSnapshot[x_dim * (z_max-z_min+1)];
-        snapbiomes = new Biome[x_dim * (z_max-z_min+1)][];
+        snapbiomes = new BiomeMap[x_dim * (z_max-z_min+1)][];
     }
 
     public int loadChunks(int max_to_load) {
@@ -446,7 +457,7 @@ public class NewMapChunkCache implements MapChunkCache {
 
         checkTickList();
         
-        DynmapPlugin.setIgnoreChunkLoads(true);
+        DynmapCore.setIgnoreChunkLoads(true);
         //boolean isnormral = w.getEnvironment() == Environment.NORMAL;
         // Load the required chunks.
         while((cnt < max_to_load) && iterator.hasNext()) {
@@ -483,7 +494,6 @@ public class NewMapChunkCache implements MapChunkCache {
                 snaparray[(chunk.x-x_min) + (chunk.z - z_min)*x_dim] = ss;
                 continue;
             }
-            long tt0 = 0;
             chunks_attempted++;
             boolean wasLoaded = w.isChunkLoaded(chunk.x, chunk.z);
             boolean didload = w.loadChunk(chunk.x, chunk.z, false);
@@ -556,7 +566,7 @@ public class NewMapChunkCache implements MapChunkCache {
             }
             cnt++;
         }
-        DynmapPlugin.setIgnoreChunkLoads(false);
+        DynmapCore.setIgnoreChunkLoads(false);
 
         if(iterator.hasNext() == false) {   /* If we're done */
             isempty = true;
@@ -630,9 +640,10 @@ public class NewMapChunkCache implements MapChunkCache {
         ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
         return ss.getBlockEmittedLight(x & 0xF, y, z & 0xF);
     }
-    public Biome getBiome(int x, int z) {
+    public BiomeMap getBiome(int x, int z) {
         ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
-        return ss.getBiome(x & 0xF, z & 0xF);
+        Biome b = ss.getBiome(x & 0xF, z & 0xF);
+        return (b != null)?biome_to_bmap[b.ordinal()]:null;
     }
     public double getRawBiomeTemperature(int x, int z) {
         ChunkSnapshot ss = snaparray[((x>>4) - x_min) + ((z>>4) - z_min) * x_dim];
@@ -723,8 +734,8 @@ public class NewMapChunkCache implements MapChunkCache {
         return true;
     }
     @Override
-    public World getWorld() {
-        return w;
+    public DynmapWorld getWorld() {
+        return dw;
     }
     @Override
     public int getChunksLoaded() {
@@ -762,5 +773,20 @@ public class NewMapChunkCache implements MapChunkCache {
             }
         }
         return isok;
+    }
+
+    static {
+        Biome[] b = Biome.values();
+        BiomeMap[] bm = BiomeMap.values();
+        biome_to_bmap = new BiomeMap[b.length];
+        for(int i = 0; i < b.length; i++) {
+            String bs = b[i].toString();
+            for(int j = 0; j < bm.length; j++) {
+                if(bm[j].toString().equals(bs)) {
+                    biome_to_bmap[b[i].ordinal()] = bm[j];
+                    break;
+                }
+            }
+        }
     }
 }

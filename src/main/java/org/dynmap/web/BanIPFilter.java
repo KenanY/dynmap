@@ -1,6 +1,6 @@
 package org.dynmap.web;
 
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.Log;
 
 import javax.servlet.*;
@@ -9,15 +9,14 @@ import java.io.IOException;
 import java.util.HashSet;
 
 public class BanIPFilter implements Filter {
-    private DynmapPlugin plugin;
+    private DynmapCore core;
     private HashSet<String> banned_ips = new HashSet<String>();
     private HashSet<String> banned_ips_notified = new HashSet<String>();
     private long last_loaded = 0;
-    private long lastmod = 0;
     private static final long BANNED_RELOAD_INTERVAL = 15000;	/* Every 15 seconds */
 
-    public BanIPFilter(DynmapPlugin plugin) {
-        this.plugin = plugin;
+    public BanIPFilter(DynmapCore core) {
+        this.core = core;
     }
 
     @Override
@@ -38,7 +37,7 @@ public class BanIPFilter implements Filter {
     private void loadBannedIPs() {
         banned_ips.clear();
         banned_ips_notified.clear();
-        banned_ips.addAll(plugin.getIPBans());
+        banned_ips.addAll(core.getIPBans());
     }
 
     /* Return true if address is banned */

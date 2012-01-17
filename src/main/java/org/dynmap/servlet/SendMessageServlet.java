@@ -1,7 +1,6 @@
 package org.dynmap.servlet;
 
-import org.bukkit.OfflinePlayer;
-import org.dynmap.DynmapPlugin;
+import org.dynmap.DynmapCore;
 import org.dynmap.Event;
 import org.dynmap.Log;
 import org.dynmap.web.HttpStatus;
@@ -21,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+@SuppressWarnings("serial")
 public class SendMessageServlet extends HttpServlet {
     protected static final Logger log = Logger.getLogger("Minecraft");
 
@@ -40,7 +40,7 @@ public class SendMessageServlet extends HttpServlet {
     public boolean use_player_login_ip = false;
     public boolean require_player_login_ip = false;
     public boolean check_user_ban = false;
-    public DynmapPlugin plug_in;
+    public DynmapCore core;
 
 
     @Override
@@ -73,12 +73,11 @@ public class SendMessageServlet extends HttpServlet {
                 message.name = request.getRemoteAddr();
         }
         if (use_player_login_ip) {
-            List<String> ids = plug_in.getIDsForIP(message.name);
+            List<String> ids = core.getIDsForIP(message.name);
             if (ids != null) {
                 String id = ids.get(0);
                 if (check_user_ban) {
-                    OfflinePlayer p = plug_in.getServer().getOfflinePlayer(id);
-                    if ((p != null) && p.isBanned()) {
+                    if (core.getServer().isPlayerBanned(id)) {
                         Log.info("Ignore message from '" + message.name + "' - banned player (" + id + ")");
                         response.sendError(HttpStatus.Forbidden.getCode());
                         return;

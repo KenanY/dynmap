@@ -1,4 +1,4 @@
-package org.dynmap.utils;
+package org.dynmap.bukkit;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -23,6 +23,7 @@ public class SnapshotCache {
         boolean hashighesty;
     }
     
+    @SuppressWarnings("serial")
     public class CacheHashMap extends LinkedHashMap<String, CacheRec> {
         private int limit;
         private IdentityHashMap<WeakReference<ChunkSnapshot>, String> reverselookup;

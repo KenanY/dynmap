@@ -1,10 +1,7 @@
 package org.dynmap.utils;
-import org.bukkit.World;
-import org.bukkit.block.Biome;
 
-import java.util.List;
-import org.dynmap.DynmapChunk;
 import org.dynmap.DynmapWorld;
+import org.dynmap.common.BiomeMap;
 
 public interface MapChunkCache {
     public enum HiddenChunkStyle {
@@ -15,10 +12,6 @@ public interface MapChunkCache {
     public static class VisibilityLimit {
         public int x0, x1, z0, z1;
     }
-    /**
-     * Set chunks to load, and world to load from
-     */
-    void setChunks(World w, List<DynmapChunk> chunks);
     /**
      * Set chunk data type needed
      * @param blockdata - need block type and data for chunk
@@ -69,7 +62,7 @@ public interface MapChunkCache {
     /**
      * Get biome at coordinates
      */
-    public Biome getBiome(int x, int z);
+    public BiomeMap getBiome(int x, int z);
     /**
      * Get raw temperature data (0.0-1.0)
      */
@@ -105,7 +98,7 @@ public interface MapChunkCache {
     /**
      * Get world
      */
-    public World getWorld();
+    public DynmapWorld getWorld();
     /**
      * Get total chunks loaded
      * @return
