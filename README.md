@@ -1,7 +1,7 @@
 # Dynmap - Realtime Minecraft maps
 
 ## Fork
-This is a fork of the [main Dynmap repository](https://github.com/webbukkit/dynmap). This fork focuses on the web front-end of Dynmap, instead of the Java that's working behind the scenes. Minifying CSS and JavaScript files is one thing that should come to mind.
+This is a fork of the [main Dynmap repository](https://github.com/webbukkit/dynmap). Actually, **this isn't 100% true anymore** because the authors of Dynmap have [split](https://github.com/webbukkit/dynmap/commit/fc319a2d32f6d5edecd9b7a287fb71a685495736) the plugin between two repositories: The original and [DynmapCore](https://github.com/webbukkit/DynmapCore). This fork focuses on the web front-end of Dynmap, instead of the Java that's working behind the scenes. Because of the web portion of Dynmap is **now** found in DynmapCore, this is now actually a fork of Dynmap core, although it was originally a fork of Dynmap **before** the split.
 
 ### What's different?
 * Moved `charset` to the top of `index.html` because it should be found in the first [mebibyte][]
