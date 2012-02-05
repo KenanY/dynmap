@@ -35,11 +35,14 @@ public interface MapIterator {
      */
     int getBlockData();
     /**
+<<<<<<< HEAD
      * Get highest block Y coordinate at current X,Z
      * @return highest block coord 
      */
     int getHighestBlockYAt();
     /**
+=======
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
      * Get block sky light level at current coordinate
      * @return sky light level
      */
@@ -54,6 +57,13 @@ public interface MapIterator {
      */
     public BiomeMap getBiome();
     /**
+<<<<<<< HEAD
+=======
+     * Count biomes in and adjacent to block matching SWAMPLAND
+     */
+    public int  countSmoothedSwampBiomes();
+    /**
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
      * Get raw temperature data (0.0-1.0)
      */
     public double getRawBiomeTemperature();
@@ -100,4 +110,11 @@ public interface MapIterator {
      * Get last step taken
      */
     BlockStep getLastStep();
+<<<<<<< HEAD
+=======
+    /**
+     * Get world height
+     */
+    int getWorldHeight();
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 }

@@ -61,5 +61,9 @@ var KzedMapType = DynmapTileLayer.extend({
 		};
 	}
 });
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 maptypes.KzedMapType = function(configuration) { return new KzedMapType(configuration); };

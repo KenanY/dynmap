@@ -15,8 +15,13 @@ public class ColorScheme {
 
     public String name;
     /* Switch to arrays - faster than map */
+<<<<<<< HEAD
     public final Color[][] colors;    /* [blk-type][step] */
     public final Color[][][] datacolors; /* [bkt-type][blk-dat][step] */
+=======
+    public Color[][] colors;    /* [blk-type][step] */
+    public Color[][][] datacolors; /* [bkt-type][blk-dat][step] */
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     public final Color[][] biomecolors;   /* [Biome.ordinal][step] */
     public final Color[][] raincolors;  /* [rain * 63][step] */
     public final Color[][] tempcolors;  /* [temp * 63][step] */
@@ -133,6 +138,18 @@ public class ColorScheme {
                 else {
                     id = new Integer(split[0]);
                 }
+<<<<<<< HEAD
+=======
+                if((!isbiome) && (id >= colors.length)) {
+                    Color[][] newcolors = new Color[id+1][];
+                    System.arraycopy(colors, 0, newcolors, 0, colors.length);
+                    colors = newcolors;
+                    Color[][][] newdatacolors = new Color[id+1][][];
+                    System.arraycopy(datacolors, 0, newdatacolors, 0, datacolors.length);
+                    datacolors = newdatacolors;
+                }
+                
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 Color[] c = new Color[5];
 
                 /* store colors by raycast sequence number */
@@ -173,7 +190,11 @@ public class ColorScheme {
             }
             scanner.close();
             /* Last, push base color into any open slots in data colors list */
+<<<<<<< HEAD
             for(int k = 0; k < 256; k++) {
+=======
+            for(int k = 0; k < datacolors.length; k++) {
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 Color[][] dc = datacolors[k];    /* see if data colors too */
                 if(dc != null) {
                     Color[] c = colors[k];
@@ -244,6 +265,19 @@ public class ColorScheme {
         else
             return null;
     }
+<<<<<<< HEAD
+=======
+    public void resizeColorArray(int idx) {
+        if(idx >= colors.length){
+            Color[][] newcolors = new Color[idx+1][];
+            System.arraycopy(colors, 0, newcolors, 0, colors.length);
+            colors = newcolors;
+            Color[][][] newdatacolors = new Color[idx+1][][];
+            System.arraycopy(datacolors, 0, newdatacolors, 0, datacolors.length);
+            datacolors = newdatacolors;
+        }
+    }
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     public static void reset() {
         cache.clear();
     }

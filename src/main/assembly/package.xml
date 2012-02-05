@@ -6,6 +6,7 @@
   </formats>
   <fileSets>
     <fileSet>
+<<<<<<< HEAD
       <directory>${project.basedir}</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
@@ -48,4 +49,20 @@
   	  <destName>dynmap.jar</destName>
 	</file>
   </files>
+=======
+      <directory>${project.basedir}/web</directory>
+      <outputDirectory>/web</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/colorschemes</directory>
+      <outputDirectory>/colorschemes</outputDirectory>
+    </fileSet>
+    <fileSet>
+    	<directory>${project.basedir}/texturepacks</directory>
+    	<outputDirectory>/texturepacks</outputDirectory></fileSet>
+    <fileSet>
+    	<directory>${project.basedir}/renderdata</directory>
+    	<outputDirectory>/renderdata</outputDirectory></fileSet>
+  </fileSets>
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 </assembly>

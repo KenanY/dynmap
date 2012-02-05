@@ -75,4 +75,15 @@ public interface DynmapServerInterface {
      * Get Biome ID list
      */
     public String[] getBiomeIDs();
+<<<<<<< HEAD
+=======
+    /**
+     * Get snapshot cache hit rate
+     */
+    public double getCacheHitRate();
+    /**
+     * Reset cache stats
+     */
+    public void resetCacheStats();
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 }

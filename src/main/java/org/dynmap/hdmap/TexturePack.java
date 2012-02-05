@@ -9,6 +9,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
+<<<<<<< HEAD
+=======
+import java.util.Arrays;
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -78,6 +82,7 @@ public class TexturePack {
     private static final int COLORMOD_OLD_WATERSHADED = 16;
     
     /* Special tile index values */
+<<<<<<< HEAD
     private static final int BLOCKINDEX_BLANK = -1;
     private static final int BLOCKINDEX_GRASS = 0;
     private static final int BLOCKINDEX_GRASSMASK = 38;
@@ -104,6 +109,36 @@ public class TexturePack {
     private static final int BLOCKTABLELEN = 1000;  /* Leave room for dynmaic tiles */
 
     private static int next_dynamic_tile = MAX_BLOCKINDEX+1;
+=======
+    private static final int TILEINDEX_BLANK = -1;
+    private static final int TILEINDEX_GRASS = 0;
+    private static final int TILEINDEX_GRASSMASK = 38;
+    private static final int TILEINDEX_SNOW = 66;
+    private static final int TILEINDEX_SNOWSIDE = 68;
+    private static final int TILEINDEX_PISTONSIDE = 108;
+    private static final int TILEINDEX_GLASSPANETOP = 148;
+    private static final int TILEINDEX_AIRFRAME = 158;
+    private static final int TILEINDEX_REDSTONE_NSEW_TONE = 164;
+    private static final int TILEINDEX_REDSTONE_EW_TONE = 165;
+    private static final int TILEINDEX_EYEOFENDER = 174;
+    private static final int TILEINDEX_REDSTONE_NSEW = 180;
+    private static final int TILEINDEX_REDSTONE_EW = 181;
+    private static final int TILEINDEX_STATIONARYWATER = 257;
+    private static final int TILEINDEX_MOVINGWATER = 258;
+    private static final int TILEINDEX_STATIONARYLAVA = 259;
+    private static final int TILEINDEX_MOVINGLAVA = 260;
+    private static final int TILEINDEX_PISTONEXTSIDE = 261;
+    private static final int TILEINDEX_PISTONSIDE_EXT = 262;
+    private static final int TILEINDEX_PANETOP_X = 263;
+    private static final int TILEINDEX_AIRFRAME_EYE = 264;
+    private static final int TILEINDEX_FIRE = 265;
+    private static final int MAX_TILEINDEX = 265;  /* Index of last static tile definition */
+    private static final int TILETABLE_LEN = 1000;  /* Leave room for dynmaic tiles */
+
+    private static final int BLOCKTABLELEN = 256;  /* Enough for normal block IDs */
+
+    private static int next_dynamic_tile = MAX_TILEINDEX+1;
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     private static class DynamicTileFile {
         String filename;
         int tilecnt_x, tilecnt_y;   /* Number of tiles horizontally and vertically */
@@ -155,12 +190,39 @@ public class TexturePack {
         private static HDTextureMap[] texmaps;
         private static BlockTransparency transp[];
         private static boolean userenderdata[];
+<<<<<<< HEAD
+=======
+        private static HDTextureMap blank;
+        
+        private static void resizeTable(int idx) {
+            int cnt = idx+1;
+            /* Copy texture maps */
+            HDTextureMap[] newtexmaps = new HDTextureMap[cnt*16];
+            System.arraycopy(texmaps, 0, newtexmaps, 0, texmaps.length);
+            Arrays.fill(newtexmaps, texmaps.length, newtexmaps.length-1, blank);
+            texmaps = newtexmaps;
+            /* Copy transparency */
+            BlockTransparency[] newtrans = new BlockTransparency[cnt];
+            System.arraycopy(transp, 0, newtrans, 0, transp.length);
+            Arrays.fill(newtrans, transp.length, cnt-1, BlockTransparency.OPAQUE);
+            transp = newtrans;
+            /* Copy use-render-data */
+            boolean[] newurd = new boolean[cnt];
+            System.arraycopy(userenderdata, 0, newurd, 0, userenderdata.length);
+            Arrays.fill(newurd, userenderdata.length, cnt-1, false);
+            userenderdata = newurd;
+        }
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         
         private static void initializeTable() {
             texmaps = new HDTextureMap[16*BLOCKTABLELEN];
             transp = new BlockTransparency[BLOCKTABLELEN];
             userenderdata = new boolean[BLOCKTABLELEN];
+<<<<<<< HEAD
             HDTextureMap blank = new HDTextureMap();
+=======
+            blank = new HDTextureMap();
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
             for(int i = 0; i < texmaps.length; i++)
                 texmaps[i] = blank;
             for(int i = 0; i < transp.length; i++)
@@ -171,12 +233,16 @@ public class TexturePack {
             blockids = Collections.singletonList(Integer.valueOf(0));
             databits = 0xFFFF;
             userender = false;
+<<<<<<< HEAD
             faces = new int[] { BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK, BLOCKINDEX_BLANK };
             
             for(int i = 0; i < texmaps.length; i++) {
                 texmaps[i] = this;
             }
 
+=======
+            faces = new int[] { TILEINDEX_BLANK, TILEINDEX_BLANK, TILEINDEX_BLANK, TILEINDEX_BLANK, TILEINDEX_BLANK, TILEINDEX_BLANK };
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         }
         
         public HDTextureMap(List<Integer> blockids, int databits, int[] faces, BlockTransparency trans, boolean userender) {
@@ -190,6 +256,11 @@ public class TexturePack {
         public void addToTable() {
             /* Add entries to lookup table */
             for(Integer blkid : blockids) {
+<<<<<<< HEAD
+=======
+                if(blkid >= transp.length)
+                    resizeTable(blkid);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 for(int i = 0; i < 16; i++) {
                     if((databits & (1 << i)) != 0) {
                         texmaps[16*blkid + i] = this;
@@ -201,6 +272,7 @@ public class TexturePack {
         }
         
         public static HDTextureMap getMap(int blkid, int blkdata, int blkrenderdata) {
+<<<<<<< HEAD
         	if(userenderdata[blkid])
         		return texmaps[(blkid<<4) + blkrenderdata];
         	else
@@ -209,6 +281,26 @@ public class TexturePack {
         
         public static BlockTransparency getTransparency(int blkid) {
             return transp[blkid];
+=======
+            try {
+                if(userenderdata[blkid])
+                    return texmaps[(blkid<<4) + blkrenderdata];
+                else
+                    return texmaps[(blkid<<4) + blkdata];
+            } catch (ArrayIndexOutOfBoundsException aioobx) {
+                resizeTable(blkid);
+                return blank;
+            }
+        }
+        
+        public static BlockTransparency getTransparency(int blkid) {
+            try {
+                return transp[blkid];
+            } catch (ArrayIndexOutOfBoundsException aioobx) {
+                resizeTable(blkid);
+                return BlockTransparency.OPAQUE;
+            }
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         }
         
         private static void remapTexture(int id, int srcid) {
@@ -282,6 +374,7 @@ public class TexturePack {
                     is = zf.getInputStream(ze);
                 }
                 loadImage(is, IMG_WATER);
+<<<<<<< HEAD
                 patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
                 patchTextureWithImage(IMG_WATER, BLOCKINDEX_MOVINGWATER);
                 is.close();                
@@ -293,6 +386,19 @@ public class TexturePack {
                 patchTextureWithImage(IMG_LAVAMOVING, BLOCKINDEX_MOVINGLAVA);
             }
             patchTextureWithImage(IMG_FIRE, BLOCKINDEX_FIRE);
+=======
+                patchTextureWithImage(IMG_WATER, TILEINDEX_STATIONARYWATER);
+                patchTextureWithImage(IMG_WATER, TILEINDEX_MOVINGWATER);
+                is.close();                
+            }
+            else {
+                patchTextureWithImage(IMG_WATER, TILEINDEX_STATIONARYWATER);
+                patchTextureWithImage(IMG_WATERMOVING, TILEINDEX_MOVINGWATER);
+                patchTextureWithImage(IMG_LAVA, TILEINDEX_STATIONARYLAVA);
+                patchTextureWithImage(IMG_LAVAMOVING, TILEINDEX_MOVINGLAVA);
+            }
+            patchTextureWithImage(IMG_FIRE, TILEINDEX_FIRE);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 
             /* Try to find and load misc/grasscolor.png */
             ze = zf.getEntry(GRASSCOLOR_PNG);
@@ -336,25 +442,41 @@ public class TexturePack {
             if(ze != null) {
                 is = zf.getInputStream(ze);
                 loadImage(is, IMG_CUSTOMLAVAMOVING);
+<<<<<<< HEAD
                 patchTextureWithImage(IMG_CUSTOMLAVAMOVING, BLOCKINDEX_MOVINGLAVA);
+=======
+                patchTextureWithImage(IMG_CUSTOMLAVAMOVING, TILEINDEX_MOVINGLAVA);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
             }
             ze = zf.getEntry(CUSTOMLAVASTILL_PNG);
             if(ze != null) {
                 is = zf.getInputStream(ze);
                 loadImage(is, IMG_CUSTOMLAVASTILL);
+<<<<<<< HEAD
                 patchTextureWithImage(IMG_CUSTOMLAVASTILL, BLOCKINDEX_STATIONARYLAVA);
+=======
+                patchTextureWithImage(IMG_CUSTOMLAVASTILL, TILEINDEX_STATIONARYLAVA);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
             }
             ze = zf.getEntry(CUSTOMWATERFLOWING_PNG);
             if(ze != null) {
                 is = zf.getInputStream(ze);
                 loadImage(is, IMG_CUSTOMWATERMOVING);
+<<<<<<< HEAD
                 patchTextureWithImage(IMG_CUSTOMWATERMOVING, BLOCKINDEX_MOVINGWATER);
+=======
+                patchTextureWithImage(IMG_CUSTOMWATERMOVING, TILEINDEX_MOVINGWATER);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
             }
             ze = zf.getEntry(CUSTOMWATERSTILL_PNG);
             if(ze != null) {
                 is = zf.getInputStream(ze);
                 loadImage(is, IMG_CUSTOMWATERSTILL);
+<<<<<<< HEAD
                 patchTextureWithImage(IMG_CUSTOMWATERSTILL, BLOCKINDEX_STATIONARYWATER);
+=======
+                patchTextureWithImage(IMG_CUSTOMWATERSTILL, TILEINDEX_STATIONARYWATER);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
             }
 
             /* Loop through dynamic files */
@@ -399,6 +521,7 @@ public class TexturePack {
                 }
                 fis = new FileInputStream(f);
                 loadImage(fis, IMG_WATER);
+<<<<<<< HEAD
                 patchTextureWithImage(IMG_WATER, BLOCKINDEX_STATIONARYWATER);
                 patchTextureWithImage(IMG_WATER, BLOCKINDEX_MOVINGWATER);
                 fis.close();
@@ -411,6 +534,20 @@ public class TexturePack {
             }
             /* Patch in generated value */
             patchTextureWithImage(IMG_FIRE, BLOCKINDEX_FIRE);
+=======
+                patchTextureWithImage(IMG_WATER, TILEINDEX_STATIONARYWATER);
+                patchTextureWithImage(IMG_WATER, TILEINDEX_MOVINGWATER);
+                fis.close();
+            }
+            else {
+                patchTextureWithImage(IMG_WATER, TILEINDEX_STATIONARYWATER);
+                patchTextureWithImage(IMG_WATERMOVING, TILEINDEX_MOVINGWATER);
+                patchTextureWithImage(IMG_LAVA, TILEINDEX_STATIONARYLAVA);
+                patchTextureWithImage(IMG_LAVAMOVING, TILEINDEX_MOVINGLAVA);
+            }
+            /* Patch in generated value */
+            patchTextureWithImage(IMG_FIRE, TILEINDEX_FIRE);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 
             /* Check for misc/grasscolor.png */
             f = new File(texturedir, tpname + "/" + GRASSCOLOR_PNG);
@@ -442,28 +579,44 @@ public class TexturePack {
             if(f.canRead()) {
                 fis = new FileInputStream(f);
                 loadImage(fis, IMG_CUSTOMLAVAMOVING);
+<<<<<<< HEAD
                 patchTextureWithImage(IMG_CUSTOMLAVAMOVING, BLOCKINDEX_MOVINGLAVA);
+=======
+                patchTextureWithImage(IMG_CUSTOMLAVAMOVING, TILEINDEX_MOVINGLAVA);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 fis.close();
             }
             f = new File(texturedir, tpname + "/" + CUSTOMLAVASTILL_PNG);
             if(f.canRead()) {
                 fis = new FileInputStream(f);
                 loadImage(fis, IMG_CUSTOMLAVASTILL);
+<<<<<<< HEAD
                 patchTextureWithImage(IMG_CUSTOMLAVASTILL, BLOCKINDEX_STATIONARYLAVA);
+=======
+                patchTextureWithImage(IMG_CUSTOMLAVASTILL, TILEINDEX_STATIONARYLAVA);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 fis.close();
             }
             f = new File(texturedir, tpname + "/" + IMG_CUSTOMWATERMOVING);
             if(f.canRead()) {
                 fis = new FileInputStream(f);
                 loadImage(fis, IMG_CUSTOMWATERMOVING);
+<<<<<<< HEAD
                 patchTextureWithImage(IMG_CUSTOMWATERMOVING, BLOCKINDEX_MOVINGWATER);
+=======
+                patchTextureWithImage(IMG_CUSTOMWATERMOVING, TILEINDEX_MOVINGWATER);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 fis.close();
             }
             f = new File(texturedir, tpname + "/" + IMG_CUSTOMWATERSTILL);
             if(f.canRead()) {
                 fis = new FileInputStream(f);
                 loadImage(fis, IMG_CUSTOMWATERSTILL);
+<<<<<<< HEAD
                 patchTextureWithImage(IMG_CUSTOMWATERSTILL, BLOCKINDEX_STATIONARYWATER);
+=======
+                patchTextureWithImage(IMG_CUSTOMWATERSTILL, TILEINDEX_STATIONARYWATER);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 fis.close();
             }
             /* Loop through dynamic files */
@@ -508,12 +661,17 @@ public class TexturePack {
         terrain_width = img.getWidth();
         terrain_height = img.getHeight();
         native_scale = terrain_width / 16;
+<<<<<<< HEAD
         terrain_argb = new int[BLOCKTABLELEN][];
+=======
+        terrain_argb = new int[TILETABLE_LEN][];
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         for(i = 0; i < 256; i++) {
             terrain_argb[i] = new int[native_scale*native_scale];
             img.getRGB((i & 0xF)*native_scale, (i>>4)*native_scale, native_scale, native_scale, terrain_argb[i], 0, native_scale);
         }
         int[] blank = new int[native_scale*native_scale];
+<<<<<<< HEAD
         for(i = 256; i < BLOCKTABLELEN; i++) {
             terrain_argb[i] = blank;
         }
@@ -571,6 +729,65 @@ public class TexturePack {
         for(i = native_scale/4; i < native_scale*3/4; i++) {
             for(j = native_scale/4; j < native_scale*3/4; j++) {
                 terrain_argb[BLOCKINDEX_AIRFRAME_EYE][native_scale*i + j] = terrain_argb[BLOCKINDEX_EYEOFENDER][native_scale*i + j];
+=======
+        for(i = 256; i < TILETABLE_LEN; i++) {
+            terrain_argb[i] = blank;
+        }
+        /* Fallbacks */
+        terrain_argb[TILEINDEX_STATIONARYLAVA] = terrain_argb[255];
+        terrain_argb[TILEINDEX_MOVINGLAVA] = terrain_argb[255];
+        /* Now, build redstone textures with active wire color (since we're not messing with that) */
+        Color tc = new Color();
+        for(i = 0; i < native_scale*native_scale; i++) {
+            if(terrain_argb[TILEINDEX_REDSTONE_NSEW_TONE][i] != 0) {
+                /* Overlay NSEW redstone texture with toned wire color */
+                tc.setARGB(terrain_argb[TILEINDEX_REDSTONE_NSEW_TONE][i]);
+                tc.blendColor(0xFFC00000);  /* Blend in red */
+                terrain_argb[TILEINDEX_REDSTONE_NSEW][i] = tc.getARGB();
+            }
+            if(terrain_argb[TILEINDEX_REDSTONE_EW_TONE][i] != 0) {
+                /* Overlay NSEW redstone texture with toned wire color */
+                tc.setARGB(terrain_argb[TILEINDEX_REDSTONE_EW_TONE][i]);
+                tc.blendColor(0xFFC00000);  /* Blend in red */
+                terrain_argb[TILEINDEX_REDSTONE_EW][i] = tc.getARGB();
+            }
+        }
+        /* Build extended piston side texture - take top 1/4 of piston side, use to make piston extension */
+        terrain_argb[TILEINDEX_PISTONEXTSIDE] = new int[native_scale*native_scale];
+        System.arraycopy(terrain_argb[TILEINDEX_PISTONSIDE], 0, terrain_argb[TILEINDEX_PISTONEXTSIDE], 0,
+                         native_scale * native_scale / 4);
+        for(i = 0; i < native_scale/4; i++) {
+            for(j = 0; j < (3*native_scale/4); j++) {
+                terrain_argb[TILEINDEX_PISTONEXTSIDE][native_scale*(native_scale/4 + j) + (3*native_scale/8 + i)] =
+                    terrain_argb[TILEINDEX_PISTONSIDE][native_scale*i + j];
+            }
+        }
+        /* Build piston side while extended (cut off top 1/4, replace with rotated top for extension */
+        terrain_argb[TILEINDEX_PISTONSIDE_EXT] = new int[native_scale*native_scale];
+        System.arraycopy(terrain_argb[TILEINDEX_PISTONSIDE], native_scale*native_scale/4, 
+                         terrain_argb[TILEINDEX_PISTONSIDE_EXT], native_scale*native_scale/4,
+                         3 * native_scale * native_scale / 4);  /* Copy bottom 3/4 */
+        for(i = 0; i < native_scale/4; i++) {
+            for(j = 3*native_scale/4; j < native_scale; j++) {
+                terrain_argb[TILEINDEX_PISTONSIDE_EXT][native_scale*(j - 3*native_scale/4) + (3*native_scale/8 + i)] =
+                    terrain_argb[TILEINDEX_PISTONSIDE][native_scale*i + j];
+            }
+        }
+        /* Build glass pane top in NSEW config (we use model to clip it) */
+        terrain_argb[TILEINDEX_PANETOP_X] = new int[native_scale*native_scale];
+        System.arraycopy(terrain_argb[TILEINDEX_GLASSPANETOP], 0, terrain_argb[TILEINDEX_PANETOP_X], 0, native_scale*native_scale);
+        for(i = native_scale*7/16; i < native_scale*9/16; i++) {
+            for(j = 0; j < native_scale; j++) {
+                terrain_argb[TILEINDEX_PANETOP_X][native_scale*i + j] = terrain_argb[TILEINDEX_PANETOP_X][native_scale*j + i];
+            }
+        }
+        /* Build air frame with eye overlay */
+        terrain_argb[TILEINDEX_AIRFRAME_EYE] = new int[native_scale*native_scale];
+        System.arraycopy(terrain_argb[TILEINDEX_AIRFRAME], 0, terrain_argb[TILEINDEX_AIRFRAME_EYE], 0, native_scale*native_scale);
+        for(i = native_scale/4; i < native_scale*3/4; i++) {
+            for(j = native_scale/4; j < native_scale*3/4; j++) {
+                terrain_argb[TILEINDEX_AIRFRAME_EYE][native_scale*i + j] = terrain_argb[TILEINDEX_EYEOFENDER][native_scale*i + j];
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
             }
         }
         
@@ -686,7 +903,11 @@ public class TexturePack {
             scaleTerrainPNGSubImage(native_scale, tp.native_scale, terrain_argb[idx],  tp.terrain_argb[idx]);
         }
         /* Special case - some textures are used as masks - need pure alpha (00 or FF) */
+<<<<<<< HEAD
         makeAlphaPure(tp.terrain_argb[BLOCKINDEX_GRASSMASK]); /* Grass side mask */
+=======
+        makeAlphaPure(tp.terrain_argb[TILEINDEX_GRASSMASK]); /* Grass side mask */
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     }
     private static void scaleTerrainPNGSubImage(int srcscale, int destscale, int[] src_argb, int[] dest_argb) {
         int nativeres = srcscale;
@@ -1112,7 +1333,11 @@ public class TexturePack {
      * Read color for given subblock coordinate, with given block id and data and face
      */
     public final void readColor(final HDPerspectiveState ps, final MapIterator mapiter, final Color rslt, final int blkid, final int lastblocktype,
+<<<<<<< HEAD
             TexturePackHDShader.ShaderState ss) {
+=======
+            final TexturePackHDShader.ShaderState ss) {
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         int blkdata = ps.getBlockData();
         HDTextureMap map = HDTextureMap.getMap(blkid, blkdata, ps.getBlockRenderData());
         BlockStep laststep = ps.getLastBlockStep();
@@ -1248,17 +1473,27 @@ public class TexturePack {
                 /* Check if snow above block */
                 if(mapiter.getBlockTypeIDAt(BlockStep.Y_PLUS) == BLOCKID_SNOW) {
                     if(do_snow_side) {
+<<<<<<< HEAD
                         texture = terrain_argb[BLOCKINDEX_SNOW]; /* Snow full side block */
                         textid = BLOCKINDEX_SNOW;
                     }
                     else {
                         texture = terrain_argb[BLOCKINDEX_SNOWSIDE]; /* Snow block */
                         textid = BLOCKINDEX_SNOWSIDE;
+=======
+                        texture = terrain_argb[TILEINDEX_SNOW]; /* Snow full side block */
+                        textid = TILEINDEX_SNOW;
+                    }
+                    else {
+                        texture = terrain_argb[TILEINDEX_SNOWSIDE]; /* Snow block */
+                        textid = TILEINDEX_SNOWSIDE;
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                     }
                     textop = 0;
                 }
                 else {  /* Else, check the grass color overlay */
                     if(do_grass_side) {
+<<<<<<< HEAD
                         texture = terrain_argb[BLOCKINDEX_GRASS]; /* Grass block */
                         textid = BLOCKINDEX_GRASS;
                         textop = COLORMOD_GRASSTONED;   /* Force grass toning */
@@ -1267,6 +1502,16 @@ public class TexturePack {
                         int ovclr = terrain_argb[BLOCKINDEX_GRASSMASK][v*native_scale+u];
                         if((ovclr & 0xFF000000) != 0) { /* Hit? */
                             texture = terrain_argb[BLOCKINDEX_GRASSMASK]; /* Use it */
+=======
+                        texture = terrain_argb[TILEINDEX_GRASS]; /* Grass block */
+                        textid = TILEINDEX_GRASS;
+                        textop = COLORMOD_GRASSTONED;   /* Force grass toning */
+                    }
+                    else {
+                        int ovclr = terrain_argb[TILEINDEX_GRASSMASK][v*native_scale+u];
+                        if((ovclr & 0xFF000000) != 0) { /* Hit? */
+                            texture = terrain_argb[TILEINDEX_GRASSMASK]; /* Use it */
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                             textop = COLORMOD_GRASSTONED;   /* Force grass toning */
                         }
                     }
@@ -1310,7 +1555,17 @@ public class TexturePack {
                 li = imgs[IMG_FOLIAGECOLOR];
                 break;
             case COLORMOD_WATERTONED:
+<<<<<<< HEAD
                 if(ss.do_swamp_shading && (mapiter.getBiome() == BiomeMap.SWAMPLAND))
+=======
+                if(ss.do_smooth_biome_shading) {
+                    int swamps = mapiter.countSmoothedSwampBiomes();
+                    if(swamps != 0) {
+                        clrmult = smooth_water_mult[swamps];
+                    }
+                }
+                else if(ss.do_swamp_shading && (mapiter.getBiome() == BiomeMap.SWAMPLAND))
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                     clrmult = 0xFFE0FF70;
                 break;
             case COLORMOD_BIRCHTONED:
@@ -1334,8 +1589,23 @@ public class TexturePack {
             else {
                 clrmult = biomeLookup(li.argb, li.width, mapiter.getRawBiomeRainfall(), mapiter.getRawBiomeTemperature());
             }
+<<<<<<< HEAD
             if(ss.do_swamp_shading && (mapiter.getBiome() == BiomeMap.SWAMPLAND))
                 clrmult = (clrmult & 0xFF000000) | (((clrmult & 0x00FEFEFE) + 0x4E0E4E) / 2);
+=======
+            if(ss.do_smooth_biome_shading) {
+                int swamps = mapiter.countSmoothedSwampBiomes();
+                if(swamps != 0) {
+                    int r1 = ((18-swamps) * ((clrmult >> 16) & 0xFF) + (swamps * 0x4E)) / 18;
+                    int g1 = ((18-swamps) * ((clrmult >> 8) & 0xFF) + (swamps * 0x0E)) / 18;
+                    int b1 = ((18-swamps) * (clrmult & 0xFF) + (swamps * 0x4E)) / 18;
+                    clrmult = (clrmult & 0xFF000000) | (r1 << 16) | (g1 << 8) | b1;
+                }
+            }
+            else if(ss.do_swamp_shading && (mapiter.getBiome() == BiomeMap.SWAMPLAND)) {
+                clrmult = (clrmult & 0xFF000000) | (((clrmult & 0x00FEFEFE) + 0x4E0E4E) / 2);
+            }
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         }
         if((clrmult != -1) && (clrmult != 0)) {
             rslt.blendColor(clrmult);
@@ -1346,8 +1616,19 @@ public class TexturePack {
         int w = width-1;
         int t = (int)((1.0-temp)*w);
         int h = (int)((1.0 - (temp*rainfall))*w);
+<<<<<<< HEAD
         if(h > w) h = w;
         if(t > w) t = w;
+=======
+        if(h > w) 
+        	h = w;
+        else if(h < 0)
+        	h = 0;
+        if(t > w)
+        	t = w;
+        else if(t < 0)
+        	t = 0;
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         return argb[width*h + t];
     }
     
@@ -1777,7 +2058,27 @@ public class TexturePack {
             imgs[IMG_FIRE].argb[k] = cc.getARGB();
 
         }
+<<<<<<< HEAD
 
 }
 
+=======
+    }
+    private static final int[] smooth_water_mult = new int[10];
+    
+    static {
+        /*
+         * Generate smoothed swamp multipliers (indexed by swamp biome count)
+         */
+        Color c = new Color();
+        for(int i = 0; i < 10; i++) {
+            /* Use water color multiplier base for 1.1 (E0FFAE) */
+            int r = (((9-i) * 0xFF) + (i * 0xE0)) / 9;
+            int g = 0xFF;
+            int b = (((9-i) * 0xFF) + (i * 0xAE)) / 9;
+            c.setRGBA(r & 0xFE, g & 0xFE, b & 0xFE, 0xFF);
+            smooth_water_mult[i] = c.getARGB();
+        }
+    }
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 }

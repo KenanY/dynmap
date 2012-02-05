@@ -9,7 +9,11 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
+<<<<<<< HEAD
 import java.util.HashMap;
+=======
+import java.util.LinkedHashMap;
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +38,11 @@ public class ConfigurationNode implements Map<String, Object> {
     private Yaml yaml;
     
     public ConfigurationNode() {
+<<<<<<< HEAD
         entries = new HashMap<String, Object>();
+=======
+        entries = new LinkedHashMap<String, Object>();
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     }
 
     private void initparse() {
@@ -43,6 +51,10 @@ public class ConfigurationNode implements Map<String, Object> {
 
             options.setIndent(4);
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+<<<<<<< HEAD
+=======
+            options.setPrettyFlow(true);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 
             yaml = new Yaml(new SafeConstructor(), new EmptyNullRepresenter(), options);
         }
@@ -50,7 +62,11 @@ public class ConfigurationNode implements Map<String, Object> {
 
     public ConfigurationNode(File f) {
         this.f = f;
+<<<<<<< HEAD
         entries = new HashMap<String, Object>();
+=======
+        entries = new LinkedHashMap<String, Object>();
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     }
     
     public ConfigurationNode(Map<String, Object> map) {
@@ -271,12 +287,40 @@ public class ConfigurationNode implements Map<String, Object> {
             extendMap(this, other);
     }
     
+<<<<<<< HEAD
     @SuppressWarnings("unchecked")
+=======
+    private final static Object copyValue(Object v) {
+        if(v instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> mv = (Map<String, Object>)v;
+            LinkedHashMap<String, Object> newv = new LinkedHashMap<String,Object>();
+            for(Map.Entry<String, Object> me : mv.entrySet()) {
+                newv.put(me.getKey(), copyValue(me.getValue()));
+            }
+            return newv;
+        }
+        else if(v instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> lv = (List<Object>)v;
+            ArrayList<Object> newv = new ArrayList<Object>();
+            for(int i = 0; i < lv.size(); i++) {
+                newv.add(copyValue(lv.get(i)));
+            }
+            return newv;
+        }
+        else {
+            return v;
+        }
+    }
+
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     private final static void extendMap(Map<String, Object> left, Map<String, Object> right) {
         ConfigurationNode original = new ConfigurationNode(left);
         for(Map.Entry<String, Object> entry : right.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
+<<<<<<< HEAD
             if (value instanceof Map<?, ?>) {
                 ConfigurationNode subnode = original.getNode(key);
                 if (subnode == null) {
@@ -286,6 +330,9 @@ public class ConfigurationNode implements Map<String, Object> {
             } else {
                 original.put(key, value);
             }
+=======
+            original.put(key, copyValue(value));
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         }
     }
     

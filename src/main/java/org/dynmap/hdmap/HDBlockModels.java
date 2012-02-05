@@ -29,14 +29,42 @@ public class HDBlockModels {
     
     private static HashMap<Integer, HDBlockModels> models_by_id_data = new HashMap<Integer, HDBlockModels>();
     
+<<<<<<< HEAD
+=======
+    
+    private static void resizeTable(int idx) {
+        int cnt = idx+1;
+        int[] newlinkalg = new int[cnt];
+        System.arraycopy(linkalg, 0, newlinkalg, 0, linkalg.length);
+        linkalg = newlinkalg;
+        int[][] newlinkmap = new int[cnt][];
+        System.arraycopy(linkmap, 0, newlinkmap, 0, linkmap.length);
+        linkmap = newlinkmap;
+    }
+    
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     public static class HDScaledBlockModels {
         private short[][][] modelvectors;
         
         public final short[] getScaledModel(int blocktype, int blockdata, int blockrenderdata) {
+<<<<<<< HEAD
             if(modelvectors[blocktype] == null) {
                 return null;
             }
             return modelvectors[blocktype][(blockrenderdata>=0)?blockrenderdata:blockdata];
+=======
+            try {
+                if(modelvectors[blocktype] == null) {
+                    return null;
+                }
+                return modelvectors[blocktype][(blockrenderdata>=0)?blockrenderdata:blockdata];
+            } catch (ArrayIndexOutOfBoundsException aioobx) {
+                short[][][] newmodels = new short[blocktype+1][][];
+                System.arraycopy(modelvectors, 0, newmodels, 0, modelvectors.length);
+                modelvectors = newmodels;
+                return null;
+            }
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         }
     }
     
@@ -83,7 +111,16 @@ public class HDBlockModels {
      * @return 0=no link alg
      */
     public static final int getLinkAlgID(int blkid) {
+<<<<<<< HEAD
         return linkalg[blkid];
+=======
+        try {
+            return linkalg[blkid];
+        } catch (ArrayIndexOutOfBoundsException aioobx) {
+            resizeTable(blkid);
+            return 0;
+        }
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     }
     /**
      * Get link block IDs
@@ -91,7 +128,16 @@ public class HDBlockModels {
      * @return array of block IDs to link with
      */
     public static final int[] getLinkIDs(int blkid) {
+<<<<<<< HEAD
         return linkmap[blkid];
+=======
+        try {
+            return linkmap[blkid];
+        } catch (ArrayIndexOutOfBoundsException aioobx) {
+            resizeTable(blkid);
+            return null;
+        }
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     }
     /**
      * Get scaled map of block: will return array of alpha levels, corresponding to how much of the

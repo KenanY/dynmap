@@ -7,6 +7,10 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+<<<<<<< HEAD
+=======
+import java.net.URI;
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -30,13 +34,23 @@ import org.dynmap.hdmap.HDMapManager;
 import org.dynmap.hdmap.TexturePack;
 import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.impl.MarkerAPIImpl;
+<<<<<<< HEAD
+=======
+import org.dynmap.servlet.FileLockResourceHandler;
+import org.dynmap.servlet.JettyNullLogger;
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 import org.dynmap.web.BanIPFilter;
 import org.dynmap.web.CustomHeaderFilter;
 import org.dynmap.web.FilterHandler;
 import org.dynmap.web.HandlerRouter;
 import org.eclipse.jetty.server.Server;
+<<<<<<< HEAD
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+=======
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.log.Logger;
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 import org.eclipse.jetty.util.resource.FileResource;
 import org.yaml.snakeyaml.Yaml;
 
@@ -51,6 +65,10 @@ public class DynmapCore {
     public MapManager mapManager = null;
     public PlayerList playerList;
     public ConfigurationNode configuration;
+<<<<<<< HEAD
+=======
+    public ConfigurationNode world_config;
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     public ComponentManager componentManager = new ComponentManager();
     public DynmapListenerManager listenerManager = new DynmapListenerManager(this);
     public PlayerFaces playerfacemgr;
@@ -60,6 +78,10 @@ public class DynmapCore {
     boolean waterbiomeshading = false;
     boolean fencejoin = false;
     boolean bettergrass = false;
+<<<<<<< HEAD
+=======
+    boolean smooth_biome_shading = false;
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     private HashSet<String> enabledTriggers = new HashSet<String>();
         
     public CompassMode compassmode = CompassMode.PRE19;
@@ -68,7 +90,12 @@ public class DynmapCore {
     private boolean didfullpause;
     private Map<String, LinkedList<String>> ids_by_ip = new HashMap<String, LinkedList<String>>();
     private boolean persist_ids_by_ip = false;
+<<<<<<< HEAD
 
+=======
+    private int snapshotcachesize;
+    
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     public enum CompassMode {
         PRE19,  /* Default for 1.8 and earlier (east is Z+) */
         NEWROSE,    /* Use same map orientation, fix rose */
@@ -252,9 +279,14 @@ public class DynmapCore {
         if(!createDefaultFileFromResource("/worlds.txt", f)) {
             return false;
         }
+<<<<<<< HEAD
         ConfigurationNode cn = new ConfigurationNode(f);
         cn.load();
         mergeConfigurationBranch(cn, "worlds", true, true);
+=======
+        world_config = new ConfigurationNode(f);
+        world_config.load();
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 
         /* Now, process templates */
         loadTemplates();
@@ -268,7 +300,14 @@ public class DynmapCore {
         waterbiomeshading = configuration.getBoolean("waterbiomeshaded", post_1_8);
         /* Default fence-to-block-join off for 1.8, on after */
         fencejoin = configuration.getBoolean("fence-to-block-join", post_1_8);
+<<<<<<< HEAD
 
+=======
+        /* Default smooth biome shading to off */
+        smooth_biome_shading = configuration.getBoolean("smooth-biome-shading", false);
+        /* Get snapshot cache size */
+        snapshotcachesize = configuration.getInteger("snapshotcachesize", 500);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         /* Default compassmode to pre19, to newrose after */
         String cmode = configuration.getString("compass-mode", post_1_8?"newrose":"pre19");
         if(cmode.equals("newnorth"))
@@ -401,14 +440,28 @@ public class DynmapCore {
 
     private FileResource createFileResource(String path) {
         try {
+<<<<<<< HEAD
             return new FileResource(new URL("file://" + path));
+=======
+        	File f = new File(path);
+        	URI uri = f.toURI();
+        	URL url = uri.toURL();
+            return new FileResource(url);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         } catch(Exception e) {
             Log.info("Could not create file resource");
             return null;
         }
     }
+<<<<<<< HEAD
     
     public void loadWebserver() {
+=======
+
+    public void loadWebserver() {
+        org.eclipse.jetty.util.log.Log.setLog(new JettyNullLogger());
+
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         webServer = new Server(new InetSocketAddress(configuration.getString("webserver-bindaddress", "0.0.0.0"), configuration.getInteger("webserver-port", 8123)));
         webServer.setStopAtShutdown(true);
         webServer.setGracefulShutdown(1000);
@@ -417,13 +470,21 @@ public class DynmapCore {
         int maxconnections = configuration.getInteger("max-sessions", 30);
         if(maxconnections < 2) maxconnections = 2;
         router = new HandlerRouter() {{
+<<<<<<< HEAD
             this.addHandler("/", new ResourceHandler() {{
+=======
+            this.addHandler("/", new FileLockResourceHandler() {{
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 this.setAliases(allow_symlinks);
                 this.setWelcomeFiles(new String[] { "index.html" });
                 this.setDirectoriesListed(true);
                 this.setBaseResource(createFileResource(getFile(getWebPath()).getAbsolutePath()));
             }});
+<<<<<<< HEAD
             this.addHandler("/tiles/*", new ResourceHandler() {{
+=======
+            this.addHandler("/tiles/*", new FileLockResourceHandler() {{
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 this.setAliases(allow_symlinks);
                 this.setWelcomeFiles(new String[] { });
                 this.setDirectoriesListed(true);
@@ -474,6 +535,21 @@ public class DynmapCore {
     public void disableCore() {
         if(persist_ids_by_ip)
             saveIDsByIP();
+<<<<<<< HEAD
+=======
+        
+        if (webServer != null) {
+            try {
+                webServer.stop();
+                while(webServer.isStopping())
+                    Thread.sleep(100);
+            } catch (Exception e) {
+                Log.severe("Failed to stop WebServer!", e);
+            }
+            webServer = null;
+        }
+
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         if (componentManager != null) {
             int componentCount = componentManager.components.size();
             for(Component component : componentManager.components) {
@@ -488,6 +564,7 @@ public class DynmapCore {
             mapManager = null;
         }
 
+<<<<<<< HEAD
         if (webServer != null) {
             try {
                 webServer.stop();
@@ -498,6 +575,8 @@ public class DynmapCore {
             }
             webServer = null;
         }
+=======
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         playerfacemgr = null;
         /* Clean up registered listeners */
         listenerManager.cleanup();
@@ -633,7 +712,11 @@ public class DynmapCore {
                 int radius = 0;
                 String mapname = null;
                 DynmapLocation loc = null;
+<<<<<<< HEAD
                 if(args.length == 2) {  /* Just radius */
+=======
+                if((args.length == 2) || (args.length == 3)) {  /* Just radius, or <radius> <map> */
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                     radius = Integer.parseInt(args[1]); /* Parse radius */
                     if(radius < 0)
                         radius = 0;
@@ -724,8 +807,16 @@ public class DynmapCore {
                         }
                         w = mapManager.getWorld(wname);
                         if(w != null) {
+<<<<<<< HEAD
                             DynmapLocation spawn = w.getSpawnLocation();
                             DynmapLocation loc = new DynmapLocation(wname, w.configuration.getDouble("center/x", spawn.x), w.configuration.getDouble("center/y", spawn.y), w.configuration.getDouble("center/z", spawn.z));
+=======
+                            DynmapLocation loc;
+                            if(w.center != null)
+                                loc = w.center;
+                            else
+                                loc = w.getSpawnLocation();
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                             mapManager.renderFullWorld(loc,sender, map, false);
                         }
                         else
@@ -878,11 +969,20 @@ public class DynmapCore {
     }
 
     public ConfigurationNode getWorldConfiguration(DynmapWorld world) {
+<<<<<<< HEAD
         ConfigurationNode finalConfiguration = new ConfigurationNode();
         finalConfiguration.put("name", world.getName());
         finalConfiguration.put("title", world.getName());
         
         ConfigurationNode worldConfiguration = getWorldConfigurationNode(world.getName());
+=======
+        String wname = world.getName();
+        ConfigurationNode finalConfiguration = new ConfigurationNode();
+        finalConfiguration.put("name", wname);
+        finalConfiguration.put("title", wname);
+        
+        ConfigurationNode worldConfiguration = getWorldConfigurationNode(wname);
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         
         // Get the template.
         ConfigurationNode templateConfiguration = null;
@@ -906,7 +1006,25 @@ public class DynmapCore {
         for(Map.Entry<String, Object> e : finalConfiguration.entrySet()) {
             Log.verboseinfo(e.getKey() + ": " + e.getValue());
         }
+<<<<<<< HEAD
         
+=======
+        /* Update world_config with final */
+        List<Map<String,Object>> worlds = world_config.getMapList("worlds");
+        if(worlds == null) {
+            worlds = new ArrayList<Map<String,Object>>();
+            world_config.put("worlds", worlds);
+        }
+        for(int idx = 0; idx < worlds.size(); idx++) {
+            Map<String,Object> m = worlds.get(idx);
+            if(wname.equals(m.get("name"))) {
+                worlds.remove(idx);
+                break;
+            }
+        }
+        worlds.add(finalConfiguration);
+                
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         return finalConfiguration;
     }
     
@@ -920,7 +1038,11 @@ public class DynmapCore {
     }
     
     private ConfigurationNode getWorldConfigurationNode(String worldName) {
+<<<<<<< HEAD
         for(ConfigurationNode worldNode : configuration.getNodes("worlds")) {
+=======
+        for(ConfigurationNode worldNode : world_config.getNodes("worlds")) {
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
             if (worldName.equals(worldNode.getString("name"))) {
                 return worldNode;
             }
@@ -1169,6 +1291,13 @@ public class DynmapCore {
         return version;
     }
 
+<<<<<<< HEAD
+=======
+    public String getDynmapPluginVersion() {
+        return plugin_ver;
+    }
+
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     public int triggerRenderOfBlock(String wid, int x, int y, int z) {
         if(mapManager != null)
             mapManager.touch(wid, x, y, z, "api");
@@ -1210,4 +1339,9 @@ public class DynmapCore {
         if(val != null)
             version = (String)val.get("version");
     }
+<<<<<<< HEAD
+=======
+    
+    public int getSnapShotCacheSize() { return snapshotcachesize; }
+>>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 }
