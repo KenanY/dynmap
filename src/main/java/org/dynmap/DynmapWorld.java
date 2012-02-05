@@ -2,13 +2,9 @@ package org.dynmap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-<<<<<<< HEAD
-import java.util.List;
-=======
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 
 import org.dynmap.debug.Debug;
 import org.dynmap.utils.DynmapBufferedImage;
@@ -33,15 +29,10 @@ public abstract class DynmapWorld {
     }
     public List<MapType> maps = new ArrayList<MapType>();
     public UpdateQueue updates = new UpdateQueue();
-<<<<<<< HEAD
-    public ConfigurationNode configuration;
-    public List<DynmapLocation> seedloc;
-=======
     public DynmapLocation center;
     public List<DynmapLocation> seedloc;    /* All seed location - both direct and based on visibility limits */
     private List<DynmapLocation> seedloccfg;    /* Configured full render seeds only */
     
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     public List<MapChunkCache.VisibilityLimit> visibility_limits;
     public List<MapChunkCache.VisibilityLimit> hidden_limits;
     public AutoGenerateOption do_autogenerate;
@@ -58,11 +49,6 @@ public abstract class DynmapWorld {
     private boolean checkts = true;	/* Check timestamps on first run with new configuration */
     private boolean cancelled;
     private String wname;
-<<<<<<< HEAD
-    
-    protected DynmapWorld(String wname) {
-        this.wname = wname;
-=======
     private String title;
     private boolean is_enabled;
     
@@ -78,7 +64,6 @@ public abstract class DynmapWorld {
         for(shift = 0; ((1 << shift) < worldheight); shift++) {}
         heightshift = shift;
         heightmask = (1 << shift) - 1;
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     }
     @SuppressWarnings("unchecked")
     public void setExtraZoomOutLevels(int lvl) {
@@ -553,8 +538,6 @@ public abstract class DynmapWorld {
      */
     public abstract MapChunkCache getChunkCache(List<DynmapChunk> chunks);
 
-<<<<<<< HEAD
-=======
     /**
      * Get title for world
      */
@@ -754,5 +737,4 @@ public abstract class DynmapWorld {
 
         return node;
     }
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 }

@@ -1,24 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dynmap</groupId>
-<<<<<<< HEAD
-	<artifactId>dynmap</artifactId>
-	<version>0.30</version>
-	<name>dynmap</name>
-=======
 	<artifactId>DynmapCore</artifactId>
 	<name>DynmapCore</name>
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<BUILD_NUMBER>dev</BUILD_NUMBER>
 	</properties>
-<<<<<<< HEAD
-	<url>http://github.com/webbukkit/dynmap/</url>
-=======
 	<version>0.31</version>
 	<url>http://github.com/webbukkit/DynmapCore/</url>
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/webbukkit/dynmap/issues</url>
@@ -66,10 +56,6 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-<<<<<<< HEAD
-									<include>org.dynmap:dynmap-api:jar:*</include>
-=======
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 									<include>org.eclipse.jetty:jetty-*:jar:*</include>
 									<include>javax.servlet:javax.servlet-api:jar:*</include>
 								</includes>
@@ -105,27 +91,9 @@
 	</build>
 	<dependencies>
 		<dependency>
-<<<<<<< HEAD
-			<groupId>com.nijikokun.bukkit</groupId>
-			<artifactId>Permissions</artifactId>
-			<version>[2.5.4,)</version>
-		</dependency>
-		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>1.1-R1-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.dynmap</groupId>
-			<artifactId>dynmap-api</artifactId>
-			<version>[0.25,)</version>
-=======
 			<groupId>org.dynmap</groupId>
 			<artifactId>DynmapCoreAPI</artifactId>
 			<version>${project.version}</version>
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -145,8 +113,6 @@
 			<version>8.0.1.v20110908</version>
 		</dependency>
 
-<<<<<<< HEAD
-=======
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
@@ -160,6 +126,5 @@
 			<version>1.9</version>
 			<scope>compile</scope>
 		</dependency>
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 	</dependencies>
 </project>

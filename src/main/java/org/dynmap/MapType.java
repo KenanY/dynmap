@@ -109,8 +109,6 @@ public abstract class MapType {
             }
         }
     }
-<<<<<<< HEAD
-=======
     
     public ConfigurationNode saveConfiguration() {
         ConfigurationNode cn = new ConfigurationNode();
@@ -118,5 +116,4 @@ public abstract class MapType {
         cn.put("name", getName());  /* Get map name */
         return cn;
     }
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 }

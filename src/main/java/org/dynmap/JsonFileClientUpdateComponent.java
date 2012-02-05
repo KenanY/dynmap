@@ -48,14 +48,9 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             @Override
             public void run() {
                 currentTimestamp = System.currentTimeMillis();
-<<<<<<< HEAD
-                if(last_confighash != plugin.getConfigHashcode())
-                    writeConfiguration();
-=======
                 if(last_confighash != plugin.getConfigHashcode()) {
                     writeConfiguration();
                 }
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 writeUpdates();
                 if (allowwebchat) {
                     handleWebChat();
@@ -78,20 +73,14 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             @Override
             public void triggered(Object t) {
                 writeConfiguration();
-<<<<<<< HEAD
-=======
                 writeUpdates(); /* Make sure we stay in sync */
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
             }
         });
         plugin.events.addListener("worldactivated", new Event.Listener<DynmapWorld>() {
             @Override
             public void triggered(DynmapWorld t) {
                 writeConfiguration();
-<<<<<<< HEAD
-=======
                 writeUpdates(); /* Make sure we stay in sync */
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
             }
         });
     }

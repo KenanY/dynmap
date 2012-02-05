@@ -24,10 +24,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.dynmap.DynmapCore.CompassMode;
 import org.dynmap.DynmapWorld.AutoGenerateOption;
-<<<<<<< HEAD
-import org.dynmap.bukkit.SnapshotCache;
-=======
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 import org.dynmap.common.DynmapCommandSender;
 import org.dynmap.common.DynmapPlayer;
 import org.dynmap.debug.Debug;
@@ -82,10 +78,6 @@ public class MapManager {
 
     public static MapManager mapman;    /* Our singleton */
     public HDMapManager hdmapman;
-<<<<<<< HEAD
-    public SnapshotCache sscache;
-=======
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     
     /* Thread pool for processing renders */
     private DynmapScheduledThreadPoolExecutor render_pool;
@@ -746,10 +738,6 @@ public class MapManager {
         hdmapman.loadHDShaders(core);
         hdmapman.loadHDPerspectives(core);
         hdmapman.loadHDLightings(core);
-<<<<<<< HEAD
-        sscache = new SnapshotCache(configuration.getInteger("snapshotcachesize", 500));
-=======
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         parallelrendercnt = configuration.getInteger("parallelrendercnt", 0);
         progressinterval = configuration.getInteger("progressloginterval", 100);
         if(progressinterval < 100) progressinterval = 100;
@@ -868,95 +856,12 @@ public class MapManager {
     }
     
     public boolean activateWorld(DynmapWorld dynmapWorld) {
-<<<<<<< HEAD
-        ConfigurationNode worldConfiguration = core.getWorldConfiguration(dynmapWorld);
-        if (!worldConfiguration.getBoolean("enabled", false)) {
-            Log.info("World '" + dynmapWorld.getName() + "' disabled");
-            return false;
-        }
-        String worldName = dynmapWorld.getName();
-
-        dynmapWorld.configuration = worldConfiguration;
-        Log.verboseinfo("Loading maps of world '" + worldName + "'...");
-        for(MapType map : worldConfiguration.<MapType>createInstances("maps", new Class<?>[] { DynmapCore.class }, new Object[] { core })) {
-            if(map.getName() != null)
-                dynmapWorld.maps.add(map);
-        }
-        Log.info("Loaded " + dynmapWorld.maps.size() + " maps of world '" + worldName + "'.");
-        
-        List<ConfigurationNode> loclist = worldConfiguration.getNodes("fullrenderlocations");
-        dynmapWorld.seedloc = new ArrayList<DynmapLocation>();
-        dynmapWorld.servertime = (int)(dynmapWorld.getTime() % 24000);
-        dynmapWorld.sendposition = worldConfiguration.getBoolean("sendposition", true);
-        dynmapWorld.sendhealth = worldConfiguration.getBoolean("sendhealth", true);
-        dynmapWorld.bigworld = worldConfiguration.getBoolean("bigworld", false);
-        dynmapWorld.setExtraZoomOutLevels(worldConfiguration.getInteger("extrazoomout", 0));
-        dynmapWorld.worldtilepath = new File(core.getTilesFolder(), worldName);
-        if(loclist != null) {
-            for(ConfigurationNode loc : loclist) {
-                DynmapLocation lx = new DynmapLocation(worldName, loc.getInteger("x", 0), loc.getInteger("y", 64), loc.getInteger("z", 0));
-                dynmapWorld.seedloc.add(lx);
-            }
-        }
-        /* Load visibility limits, if any are defined */
-        List<ConfigurationNode> vislimits = worldConfiguration.getNodes("visibilitylimits");
-        if(vislimits != null) {
-            dynmapWorld.visibility_limits = new ArrayList<MapChunkCache.VisibilityLimit>();
-            for(ConfigurationNode vis : vislimits) {
-                MapChunkCache.VisibilityLimit lim = new MapChunkCache.VisibilityLimit();
-                lim.x0 = vis.getInteger("x0", 0);
-                lim.x1 = vis.getInteger("x1", 0);
-                lim.z0 = vis.getInteger("z0", 0);
-                lim.z1 = vis.getInteger("z1", 0);
-                dynmapWorld.visibility_limits.add(lim);
-                /* Also, add a seed location for the middle of each visible area */
-                dynmapWorld.seedloc.add(new DynmapLocation(worldName, (lim.x0+lim.x1)/2, 64, (lim.z0+lim.z1)/2));
-            }            
-        }
-        /* Load hidden limits, if any are defined */
-        List<ConfigurationNode> hidelimits = worldConfiguration.getNodes("hiddenlimits");
-        if(hidelimits != null) {
-            dynmapWorld.hidden_limits = new ArrayList<MapChunkCache.VisibilityLimit>();
-            for(ConfigurationNode vis : hidelimits) {
-                MapChunkCache.VisibilityLimit lim = new MapChunkCache.VisibilityLimit();
-                lim.x0 = vis.getInteger("x0", 0);
-                lim.x1 = vis.getInteger("x1", 0);
-                lim.z0 = vis.getInteger("z0", 0);
-                lim.z1 = vis.getInteger("z1", 0);
-                dynmapWorld.hidden_limits.add(lim);
-            }            
-        }
-        String autogen = worldConfiguration.getString("autogenerate-to-visibilitylimits", "none");
-        if(autogen.equals("permanent")) {
-            dynmapWorld.do_autogenerate = AutoGenerateOption.PERMANENT;
-        }
-        else if(autogen.equals("map-only")) {
-            dynmapWorld.do_autogenerate = AutoGenerateOption.FORMAPONLY;
-        }
-        else {
-            dynmapWorld.do_autogenerate = AutoGenerateOption.NONE;
-        }
-        if((dynmapWorld.do_autogenerate != AutoGenerateOption.NONE) && (dynmapWorld.visibility_limits == null)) {
-            Log.info("Warning: Automatic world generation to visible limits option requires that visibitylimits be set - option disabled");
-            dynmapWorld.do_autogenerate = AutoGenerateOption.NONE;
-        }
-        String hiddenchunkstyle = worldConfiguration.getString("hidestyle", "stone");
-        if(hiddenchunkstyle.equals("air"))
-            dynmapWorld.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_AIR;
-        else if(hiddenchunkstyle.equals("ocean"))
-            dynmapWorld.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_OCEAN;
-        else
-            dynmapWorld.hiddenchunkstyle = MapChunkCache.HiddenChunkStyle.FILL_STONE_PLAIN;
-            
-    
-=======
         String worldname = dynmapWorld.getName();
         ConfigurationNode worldconfig = core.getWorldConfiguration(dynmapWorld);
         if(!dynmapWorld.loadConfiguration(core, worldconfig)) {
             Log.info("World '" + worldname + "' disabled");
             return false;
         }
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         // TODO: Make this less... weird...
         // Insert the world on the same spot as in the configuration.
         HashMap<String, Integer> indexLookup = new HashMap<String, Integer>();
@@ -965,11 +870,7 @@ public class MapManager {
             ConfigurationNode node = nodes.get(i);
             indexLookup.put(node.getString("name"), i);
         }
-<<<<<<< HEAD
-        Integer worldIndex = indexLookup.get(worldName);
-=======
         Integer worldIndex = indexLookup.get(worldname);
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         if(worldIndex == null) {
         	worlds.add(dynmapWorld);	/* Put at end if no world section */
         }
@@ -983,19 +884,12 @@ public class MapManager {
         	}
         	worlds.add(insertIndex, dynmapWorld);
         }
-<<<<<<< HEAD
-        worldsLookup.put(worldName, dynmapWorld);
-=======
         worldsLookup.put(worldname, dynmapWorld);
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         core.events.trigger("worldactivated", dynmapWorld);
         /* Now, restore any pending renders for this world */
         if(saverestorepending)
             loadPending(dynmapWorld);
-<<<<<<< HEAD
-=======
 
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         return true;
     }
 
@@ -1143,13 +1037,6 @@ public class MapManager {
         
         if(saverestorepending)
             savePending();
-<<<<<<< HEAD
-        if(sscache != null) {
-            sscache.cleanup();
-            sscache = null; 
-        }
-=======
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         did_start = false;
     }
 
@@ -1292,11 +1179,7 @@ public class MapManager {
         sender.sendMessage(String.format("  Active render jobs: %s", act));
         /* Chunk load stats */
         sender.sendMessage("Chunk Loading Statistics:");
-<<<<<<< HEAD
-        sender.sendMessage(String.format("  Cache hit rate: %.2f%%", sscache.getHitRate()));
-=======
         sender.sendMessage(String.format("  Cache hit rate: %.2f%%", core.getServer().getCacheHitRate()));
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         int setcnt = chunk_caches_attempted.get();
         sender.sendMessage(String.format("  Chunk sets: created=%d, attempted=%d", chunk_caches_created.get(), chunk_caches_attempted.get()));
         int readcnt = chunks_read.get();
@@ -1353,11 +1236,7 @@ public class MapManager {
             total_exceptions.set(0);
             ticklistcalls.set(0);
         }
-<<<<<<< HEAD
-        sscache.resetStats();
-=======
         core.getServer().resetCacheStats();
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         sender.sendMessage("Tile Render Statistics reset");
     }    
     
@@ -1376,13 +1255,10 @@ public class MapManager {
     public boolean getBetterGrass() {
         return core.bettergrass;
     }
-<<<<<<< HEAD
-=======
     
     public boolean getSmoothBiomeShading() {
         return core.smooth_biome_shading;
     }
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 
     public CompassMode getCompassMode() {
         return core.compassmode;

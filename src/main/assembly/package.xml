@@ -6,50 +6,6 @@
   </formats>
   <fileSets>
     <fileSet>
-<<<<<<< HEAD
-      <directory>${project.basedir}</directory>
-      <outputDirectory>/</outputDirectory>
-      <includes>
-        <include>README*</include>
-        <include>LICENSE*</include>
-        <include>NOTICE*</include>
-        <include>CHANGELOG*</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/web/</directory>
-      <outputDirectory>/dynmap/web/</outputDirectory>
-	  <includes>
-		<include>version.js</include>
-	  </includes>
-      <filtered>true</filtered>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/web</directory>
-      <outputDirectory>/dynmap/web</outputDirectory>
-	  <excludes>
-		<exclude>version.js</exclude>
-	  </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.basedir}/colorschemes</directory>
-      <outputDirectory>/dynmap/colorschemes</outputDirectory>
-    </fileSet>
-    <fileSet>
-    	<directory>${project.basedir}/texturepacks</directory>
-    	<outputDirectory>/dynmap/texturepacks</outputDirectory></fileSet>
-    <fileSet>
-    	<directory>${project.basedir}/renderdata</directory>
-    	<outputDirectory>/dynmap/renderdata</outputDirectory></fileSet>
-  </fileSets>
-  <files>
-  	<file>
-  	  <source>${project.build.directory}/${artifactId}-${version}.jar</source>
-  	  <outputDirectory>/</outputDirectory>
-  	  <destName>dynmap.jar</destName>
-	</file>
-  </files>
-=======
       <directory>${project.basedir}/web</directory>
       <outputDirectory>/web</outputDirectory>
     </fileSet>
@@ -64,5 +20,4 @@
     	<directory>${project.basedir}/renderdata</directory>
     	<outputDirectory>/renderdata</outputDirectory></fileSet>
   </fileSets>
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 </assembly>

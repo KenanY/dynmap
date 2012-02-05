@@ -12,15 +12,6 @@ import org.dynmap.utils.MapIterator;
 import org.json.simple.JSONObject;
 
 public class TexturePackHDShader implements HDShader {
-<<<<<<< HEAD
-    private String tpname;
-    private String name;
-    private TexturePack tp;
-    private boolean biome_shaded;
-    private boolean swamp_shaded;
-    private boolean waterbiomeshaded;
-    private boolean bettergrass;
-=======
     private final String tpname;
     private final String name;
     private final TexturePack tp;
@@ -30,7 +21,6 @@ public class TexturePackHDShader implements HDShader {
     private final boolean bettergrass;
     private final boolean smooth_biome_shading;
     private final int gridscale;
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     
     public TexturePackHDShader(DynmapCore core, ConfigurationNode configuration) {
         tpname = configuration.getString("texturepack", "minecraft");
@@ -40,11 +30,8 @@ public class TexturePackHDShader implements HDShader {
         swamp_shaded = configuration.getBoolean("swampshaded", MapManager.mapman.getSwampShading());
         waterbiomeshaded = configuration.getBoolean("waterbiomeshaded", MapManager.mapman.getWaterBiomeShading());
         bettergrass = configuration.getBoolean("better-grass", MapManager.mapman.getBetterGrass());
-<<<<<<< HEAD
-=======
         smooth_biome_shading = configuration.getBoolean("smooth-biome-shading", MapManager.mapman.getSmoothBiomeShading());
         gridscale = configuration.getInteger("grid-scale", 0);
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         if(tp == null) {
             Log.severe("Error: shader '" + name + "' cannot load texture pack '" + tpname + "'");
         }
@@ -52,11 +39,7 @@ public class TexturePackHDShader implements HDShader {
     
     @Override
     public boolean isBiomeDataNeeded() { 
-<<<<<<< HEAD
-        return swamp_shaded; 
-=======
         return swamp_shaded || smooth_biome_shading || biome_shaded || waterbiomeshaded; 
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     }
     
     @Override
@@ -90,20 +73,6 @@ public class TexturePackHDShader implements HDShader {
     }
     
     class ShaderState implements HDShaderState {
-<<<<<<< HEAD
-        private Color color[];
-        private Color tmpcolor[];
-        private Color c;
-        protected MapIterator mapiter;
-        protected HDMap map;
-        private TexturePack scaledtp;
-        private HDLighting lighting;
-        private int lastblkid;
-        boolean do_biome_shading;
-        boolean do_swamp_shading;
-        boolean do_water_shading;
-        boolean do_better_grass;
-=======
         final private Color color[];
         final private Color tmpcolor[];
         final private Color c;
@@ -117,7 +86,6 @@ public class TexturePackHDShader implements HDShader {
         final boolean do_water_shading;
         final boolean do_better_grass;
         final boolean do_smooth_biome_shading;
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         
         private ShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
@@ -138,10 +106,7 @@ public class TexturePackHDShader implements HDShader {
             do_swamp_shading = do_biome_shading && swamp_shaded;
             do_water_shading = do_biome_shading && waterbiomeshaded;
             do_better_grass = bettergrass;
-<<<<<<< HEAD
-=======
             do_smooth_biome_shading = smooth_biome_shading && do_biome_shading;
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         }
         /**
          * Get our shader
@@ -208,17 +173,6 @@ public class TexturePackHDShader implements HDShader {
                 }
                 /* Handle light level, if needed */
                 lighting.applyLighting(ps, this, c, tmpcolor);
-<<<<<<< HEAD
-                /* If we got alpha from subblock model, use it instead if it is lower */
-                /* (disable for now: weighting is wrong, as crosssection is 2D, not 3D based) */
-//                if(subalpha >= 0) {
-//                    for(Color clr : tmpcolor) {
-//                    	int a = clr.getAlpha();
-//                    	if(subalpha < a)
-//                    		clr.setAlpha(subalpha);
-//                    }
-//                }
-=======
                 /* If grid scale, add it */
                 if(gridscale > 0) {
                     int xx = mapiter.getX() % gridscale;
@@ -230,7 +184,6 @@ public class TexturePackHDShader implements HDShader {
                         }
                     }
                 }
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 /* If no previous color contribution, use new color */
                 if(color[0].isTransparent()) {
                     for(int i = 0; i < color.length; i++)

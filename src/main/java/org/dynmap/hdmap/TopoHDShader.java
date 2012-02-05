@@ -104,10 +104,7 @@ public class TopoHDShader implements HDShader {
         protected HDMap map;
         private HDLighting lighting;
         private int scale;
-<<<<<<< HEAD
-=======
         private int heightshift;    /* Divide to keep in 0-127 range of colors */
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         
         private OurShaderState(MapIterator mapiter, HDMap map, MapChunkCache cache) {
             this.mapiter = mapiter;
@@ -123,8 +120,6 @@ public class TopoHDShader implements HDShader {
             }
             scale = (int)map.getPerspective().getScale();
             c = new Color();
-<<<<<<< HEAD
-=======
             /* Compute divider for Y - to map to existing color range */
             int wh = mapiter.getWorldHeight();
             heightshift = 0;
@@ -132,7 +127,6 @@ public class TopoHDShader implements HDShader {
                 heightshift++;
                 wh >>= 1;
             }
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         }
         /**
          * Get our shader
@@ -190,11 +184,7 @@ public class TopoHDShader implements HDShader {
                     c.setColor(watercolor);
                 }
                 else {
-<<<<<<< HEAD
-                    c.setColor(fillcolor[mapiter.getY()]);
-=======
                     c.setColor(fillcolor[mapiter.getY() >> heightshift]);
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 }
                 break;
             default:
@@ -204,11 +194,7 @@ public class TopoHDShader implements HDShader {
                     c.setColor(watercolor);
                 }
                 else
-<<<<<<< HEAD
-                    c.setColor(fillcolor[mapiter.getY()]);
-=======
                     c.setColor(fillcolor[mapiter.getY() >> heightshift]);
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 break;
             }
             /* Handle light level, if needed */

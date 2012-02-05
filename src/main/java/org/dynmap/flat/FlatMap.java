@@ -29,18 +29,10 @@ import org.dynmap.utils.MapIterator.BlockStep;
 import org.json.simple.JSONObject;
 
 public class FlatMap extends MapType {
-<<<<<<< HEAD
-    private ConfigurationNode configuration;
-    private String prefix;
-    private String name;
-    private ColorScheme colorScheme;
-    private int maximumHeight = 127;
-=======
     private String prefix;
     private String name;
     private ColorScheme colorScheme;
     private int maximumHeight = -1;
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     private int ambientlight = 15;;
     private int shadowscale[] = null;
     private boolean night_and_day;    /* If true, render both day (prefix+'-day') and night (prefix) tiles */
@@ -48,39 +40,6 @@ public class FlatMap extends MapType {
     private enum Texture { NONE, SMOOTH, DITHER };
     private Texture textured = Texture.NONE;
     private boolean isbigmap;
-<<<<<<< HEAD
-    
-    public FlatMap(DynmapCore core, ConfigurationNode configuration) {
-        this.configuration = configuration;
-        name = configuration.getString("name", null);
-        prefix = configuration.getString("prefix", name);
-        colorScheme = ColorScheme.getScheme(core, (String) configuration.get("colorscheme"));
-        Object o = configuration.get("maximumheight");
-        if (o != null) {
-            maximumHeight = Integer.parseInt(String.valueOf(o));
-            if (maximumHeight > 127)
-                maximumHeight = 127;
-        }
-        o = configuration.get("shadowstrength");
-        if(o != null) {
-            double shadowweight = Double.parseDouble(String.valueOf(o));
-            if(shadowweight > 0.0) {
-                shadowscale = new int[16];
-                shadowscale[15] = 256;
-                /* Normal brightness weight in MC is a 20% relative dropoff per step */
-                for(int i = 14; i >= 0; i--) {
-                    double v = shadowscale[i+1] * (1.0 - (0.2 * shadowweight));
-                    shadowscale[i] = (int)v;
-                    if(shadowscale[i] > 256) shadowscale[i] = 256;
-                    if(shadowscale[i] < 0) shadowscale[i] = 0;
-                }
-            }
-        }
-        o = configuration.get("ambientlight");
-        if(o != null) {
-            ambientlight = Integer.parseInt(String.valueOf(o));
-        }
-=======
     private String title;
     private String icon;
     private String bg_cfg;
@@ -109,7 +68,6 @@ public class FlatMap extends MapType {
         }
         ambientlight = configuration.getInteger("ambientlight", 15);
         
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         night_and_day = configuration.getBoolean("night-and-day", false);
         transparency = configuration.getBoolean("transparency", false);  /* Default off */
         String tex = configuration.getString("textured", "none");
@@ -120,8 +78,6 @@ public class FlatMap extends MapType {
         else
             textured = Texture.SMOOTH;
         isbigmap = configuration.getBoolean("isbigmap", false);
-<<<<<<< HEAD
-=======
 
         title = configuration.getString("title");
         icon = configuration.getString("icon");
@@ -162,7 +118,6 @@ public class FlatMap extends MapType {
         cn.put("mapzoomin", mapzoomin);
 
         return cn;
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
     }
 
     @Override
@@ -212,9 +167,6 @@ public class FlatMap extends MapType {
 
     public boolean render(MapChunkCache cache, MapTile tile, File outputFile) {
         FlatMapTile t = (FlatMapTile) tile;
-<<<<<<< HEAD
-        boolean isnether = t.getDynmapWorld().isNether() && (maximumHeight == 127);
-=======
         int maxheight = maximumHeight;
         int worldheight = tile.getDynmapWorld().worldheight - 1;
         int hshift = tile.getDynmapWorld().heightshift - 7;
@@ -222,7 +174,6 @@ public class FlatMap extends MapType {
         if(maxheight < 0)
             maxheight = worldheight;
         boolean isnether = t.getDynmapWorld().isNether() && (maxheight == worldheight);
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 
         boolean didwrite = false;
         Color rslt = new Color();
@@ -237,30 +188,17 @@ public class FlatMap extends MapType {
             argb_buf_day = im_day.argb_buf;
             pixel_day = new int[4];
         }
-<<<<<<< HEAD
-        MapIterator mapiter = cache.getIterator(t.x * t.size, 127, t.y * t.size);
-        for (int x = 0; x < t.size; x++) {
-            mapiter.initialize(t.x * t.size + x, 127, t.y * t.size);
-            for (int y = 0; y < t.size; y++, mapiter.stepPosition(BlockStep.Z_PLUS)) {
-                int blockType;
-                mapiter.setY(127);
-=======
         MapIterator mapiter = cache.getIterator(t.x * t.size, worldheight, t.y * t.size);
         for (int x = 0; x < t.size; x++) {
             mapiter.initialize(t.x * t.size + x, worldheight, t.y * t.size);
             for (int y = 0; y < t.size; y++, mapiter.stepPosition(BlockStep.Z_PLUS)) {
                 int blockType;
                 mapiter.setY(worldheight);
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 if(isnether) {
                     while((blockType = mapiter.getBlockTypeID()) != 0) {
                         mapiter.stepPosition(BlockStep.Y_MINUS);
                         if(mapiter.getY() < 0) {    /* Solid - use top */
-<<<<<<< HEAD
-                            mapiter.setY(127);
-=======
                             mapiter.setY(worldheight);
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                             blockType = mapiter.getBlockTypeID();
                             break;
                         }
@@ -276,25 +214,6 @@ public class FlatMap extends MapType {
                     }
                 }
                 else {
-<<<<<<< HEAD
-                    int my = mapiter.getHighestBlockYAt();
-                    if(my > maximumHeight) my = maximumHeight;
-                    mapiter.setY(my);
-                    blockType = mapiter.getBlockTypeID();
-                    if(blockType == 0) {    /* If air, go down one - fixes ice */
-                        my--;
-                        if(my < 0)
-                            continue;
-                        mapiter.setY(my);
-                        blockType = mapiter.getBlockTypeID();
-                    }
-                }
-                int data = 0;
-                Color[] colors = colorScheme.colors[blockType];
-                if(colorScheme.datacolors[blockType] != null) {
-                    data = mapiter.getBlockData();
-                    colors = colorScheme.datacolors[blockType][data];
-=======
                     int my = maxheight;
                     mapiter.setY(my);
                     while((blockType = mapiter.getBlockTypeID()) == 0) {
@@ -316,7 +235,6 @@ public class FlatMap extends MapType {
                 } catch (ArrayIndexOutOfBoundsException aioobx) {
                     colorScheme.resizeColorArray(blockType);
                     colors = null;
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 }
                 if (colors == null)
                     continue;
@@ -343,11 +261,7 @@ public class FlatMap extends MapType {
                 }
                 /* If ambient light less than 15, do scaling */
                 else if((shadowscale != null) && (ambientlight < 15)) {
-<<<<<<< HEAD
-                    if(mapiter.getY() < 127) 
-=======
                     if(mapiter.getY() < worldheight) 
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                         mapiter.stepPosition(BlockStep.Y_PLUS);
                     if(night_and_day) { /* Use unscaled color for day (no shadows from above) */
                         pixel_day[0] = pixel[0];    
@@ -362,18 +276,11 @@ public class FlatMap extends MapType {
                     pixel[3] = 255;
                 }
                 else {  /* Only do height keying if we're not messing with ambient light */
-<<<<<<< HEAD
-                    boolean below = mapiter.getY() < 64;
-
-                    // Make height range from 0 - 1 (1 - 0 for below and 0 - 1 above)
-                    float height = (below ? 64 - mapiter.getY() : mapiter.getY() - 64) / 64.0f;
-=======
                     int ys = mapiter.getY() >> hshift;  /* Normalize to 0-127 */
                     boolean below = ys < 64;
 
                     // Make height range from 0 - 1 (1 - 0 for below and 0 - 1 above)
                     float height = (below ? 64 - ys : ys - 64) / 64.0f;
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
 
                     // Defines the 'step' in coloring.
                     float step = 10 / 128.0f;
@@ -708,21 +615,6 @@ public class FlatMap extends MapType {
     
     @Override
     public void buildClientConfiguration(JSONObject worldObject, DynmapWorld world) {
-<<<<<<< HEAD
-        ConfigurationNode c = configuration;
-        JSONObject o = new JSONObject();
-        s(o, "type", "FlatMapType");
-        s(o, "name", c.getString("name"));
-        s(o, "title", c.getString("title"));
-        s(o, "icon", c.getString("icon"));
-        s(o, "prefix", c.getString("prefix"));
-        s(o, "background", c.getString("background"));
-        s(o, "nightandday", c.getBoolean("night-and-day",false));
-        s(o, "backgroundday", c.getString("backgroundday"));
-        s(o, "backgroundnight", c.getString("backgroundnight"));
-        s(o, "bigmap", this.isBigWorldMap(world));
-        s(o, "mapzoomin", c.getInteger("mapzoomin", 3));
-=======
         JSONObject o = new JSONObject();
         s(o, "type", "FlatMapType");
         s(o, "name", name);
@@ -735,7 +627,6 @@ public class FlatMap extends MapType {
         s(o, "backgroundnight", bg_night_cfg);
         s(o, "bigmap", this.isBigWorldMap(world));
         s(o, "mapzoomin", mapzoomin);
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
         s(o, "mapzoomout", world.getExtraZoomOutLevels());
         if(MapManager.mapman.getCompassMode() != CompassMode.PRE19)
             s(o, "compassview", "E");   /* Always from east */

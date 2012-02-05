@@ -22,11 +22,7 @@ public class ClientConfigurationComponent extends Component {
                 s(t, "webprefix", unescapeString(c.getString("webprefix", "[WEB] ")));
                 s(t, "defaultzoom", c.getInteger("defaultzoom", 0));
                 s(t, "sidebaropened", c.getString("sidebaropened", "false"));
-<<<<<<< HEAD
-                s(t, "dynmapversion", core.getDynmapCoreVersion());
-=======
                 s(t, "dynmapversion", core.getDynmapPluginVersion());
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                 s(t, "cyrillic", c.getBoolean("cyrillic-support", false));
                 s(t, "showlayercontrol", c.getString("showlayercontrol", "true"));
                 s(t, "grayplayerswhenhidden", c.getBoolean("grayplayerswhenhidden", true));
@@ -41,16 +37,6 @@ public class ClientConfigurationComponent extends Component {
                 String defmap = null;
                 for(DynmapWorld world : core.mapManager.getWorlds()) {
                     if (defaultWorld == null) defaultWorld = world;
-<<<<<<< HEAD
-                    ConfigurationNode wn = world.configuration;
-                    JSONObject wo = new JSONObject();
-                    s(wo, "name", wn.getString("name"));
-                    s(wo, "title", wn.getString("title"));
-                    DynmapLocation spawn = world.getSpawnLocation();
-                    s(wo, "center/x", wn.getDouble("center/x", spawn.x));
-                    s(wo, "center/y", wn.getDouble("center/y", spawn.y));
-                    s(wo, "center/z", wn.getDouble("center/z", spawn.z));
-=======
                     JSONObject wo = new JSONObject();
                     s(wo, "name", world.getName());
                     s(wo, "title", world.getTitle());
@@ -58,7 +44,6 @@ public class ClientConfigurationComponent extends Component {
                     s(wo, "center/x", center.x);
                     s(wo, "center/y", center.y);
                     s(wo, "center/z", center.z);
->>>>>>> cbccbad51ec6ccf49132b373ca50c0da24f2e868
                     s(wo, "bigworld", world.bigworld);
                     s(wo, "extrazoomout", world.getExtraZoomOutLevels());
                     a(t, "worlds", wo);
