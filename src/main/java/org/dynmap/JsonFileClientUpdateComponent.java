@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.Reader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     protected long jsonInterval;
     protected long currentTimestamp = 0;
     protected long lastTimestamp = 0;
+    protected long lastChatTimestamp = 0;
     protected JSONParser parser = new JSONParser();
     private boolean hidewebchatip;
     private boolean useplayerloginip;
@@ -32,10 +34,10 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
     private HashMap<String,String> useralias = new HashMap<String,String>();
     private int aliasindex = 1;
     private long last_confighash;
-    
+    	
     private Charset cs_utf8 = Charset.forName("UTF-8");
-    public JsonFileClientUpdateComponent(final DynmapCore plugin, final ConfigurationNode configuration) {
-        super(plugin, configuration);
+    public JsonFileClientUpdateComponent(final DynmapCore core, final ConfigurationNode configuration) {
+        super(core, configuration);
         final boolean allowwebchat = configuration.getBoolean("allowwebchat", false);
         jsonInterval = (long)(configuration.getFloat("writeinterval", 1) * 1000);
         hidewebchatip = configuration.getBoolean("hidewebchatip", false);
@@ -48,7 +50,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
             @Override
             public void run() {
                 currentTimestamp = System.currentTimeMillis();
-                if(last_confighash != plugin.getConfigHashcode()) {
+                if(last_confighash != core.getConfigHashcode()) {
                     writeConfiguration();
                 }
                 writeUpdates();
@@ -59,7 +61,7 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                 MapManager.scheduleDelayedJob(this, jsonInterval);
             }}, jsonInterval);
         
-        plugin.events.addListener("buildclientconfiguration", new Event.Listener<JSONObject>() {
+        core.events.addListener("buildclientconfiguration", new Event.Listener<JSONObject>() {
             @Override
             public void triggered(JSONObject t) {
                 s(t, "jsonfile", true);
@@ -69,14 +71,14 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
                 s(t, "webchat-interval", configuration.getFloat("webchat-interval", 5.0f));
             }
         });
-        plugin.events.addListener("initialized", new Event.Listener<Object>() {
+        core.events.addListener("initialized", new Event.Listener<Object>() {
             @Override
             public void triggered(Object t) {
                 writeConfiguration();
                 writeUpdates(); /* Make sure we stay in sync */
             }
         });
-        plugin.events.addListener("worldactivated", new Event.Listener<DynmapWorld>() {
+        core.events.addListener("worldactivated", new Event.Listener<DynmapWorld>() {
             @Override
             public void triggered(DynmapWorld t) {
                 writeConfiguration();
@@ -142,7 +144,9 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
         File outputTempFile;
         if(core.mapManager == null) return;
         //Handles Updates
-        for (DynmapWorld dynmapWorld : core.mapManager.getWorlds()) {
+        ArrayList<DynmapWorld> wlist = new ArrayList<DynmapWorld>(core.mapManager.getWorlds());	// Grab copy of world list
+        for (int windx = 0; windx < wlist.size(); windx++) {
+        	DynmapWorld dynmapWorld = wlist.get(windx);
             JSONObject update = new JSONObject();
             update.put("timestamp", currentTimestamp);
             ClientUpdateEvent clientUpdate = new ClientUpdateEvent(currentTimestamp - 30000, dynmapWorld, update);
@@ -212,14 +216,19 @@ public class JsonFileClientUpdateComponent extends ClientUpdateComponent {
 
             if (jsonMsgs != null) {
                 Iterator<?> iter = jsonMsgs.iterator();
+                boolean init_skip = (lastChatTimestamp == 0);
                 while (iter.hasNext()) {
                     JSONObject o = (JSONObject) iter.next();
                     String ts = String.valueOf(o.get("timestamp"));
                     if(ts.equals("null")) ts = "0";
-                    if (Long.parseLong(ts) >= (lastTimestamp)) {
+                    long cts = Long.parseLong(ts);
+                    if (cts > lastChatTimestamp) {
                         String name = String.valueOf(o.get("name"));
                         String ip = String.valueOf(o.get("ip"));
                         boolean isip = true;
+                        lastChatTimestamp = cts;
+                        if(init_skip)
+                            continue;
                         if((!trust_client_name) || (name == null) || (name.equals(""))) {
                             if(ip != null)
                                 name = ip;

@@ -53,6 +53,10 @@ public interface MapIterator {
      */
     public int  countSmoothedSwampBiomes();
     /**
+     * Count of swamplands, interpolated - return count times scale times 2
+     */
+    public int  countSmoothedSwampBiomes(int sx, int sz, int scale);
+    /**
      * Get raw temperature data (0.0-1.0)
      */
     public double getRawBiomeTemperature();
@@ -103,4 +107,8 @@ public interface MapIterator {
      * Get world height
      */
     int getWorldHeight();
+    /**
+     * Get block key for current position (unique ID for block within cache being iterated)
+     */
+    long getBlockKey();
 }

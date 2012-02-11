@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -60,10 +61,12 @@ public class DynmapCore {
     public PlayerFaces playerfacemgr;
     public Events events = new Events();
     public String deftemplatesuffix = "";
+    private DynmapMapCommands dmapcmds = new DynmapMapCommands();
     boolean swampshading = false;
     boolean waterbiomeshading = false;
     boolean fencejoin = false;
     boolean bettergrass = false;
+    boolean smoothlighting = false;
     boolean smooth_biome_shading = false;
     private HashSet<String> enabledTriggers = new HashSet<String>();
         
@@ -247,23 +250,7 @@ public class DynmapCore {
         HDMapManager.usegeneratedtextures = configuration.getBoolean("use-generated-textures", false);
         HDMapManager.waterlightingfix = configuration.getBoolean("correct-water-lighting", false);
         HDMapManager.biomeshadingfix = configuration.getBoolean("correct-biome-shading", false);
-
-        /* Load block models */
-        HDBlockModels.loadModels(dataDirectory, configuration);
-        /* Load texture mappings */
-        TexturePack.loadTextureMapping(dataDirectory, configuration);
-        
-        /* Now, process worlds.txt - merge it in as an override of existing values (since it is only user supplied values) */
-        f = new File(dataDirectory, "worlds.txt");
-        if(!createDefaultFileFromResource("/worlds.txt", f)) {
-            return false;
-        }
-        world_config = new ConfigurationNode(f);
-        world_config.load();
-
-        /* Now, process templates */
-        loadTemplates();
-
+        smoothlighting = configuration.getBoolean("smooth-lighting", false);
         Log.verbose = configuration.getBoolean("verbose", true);
         deftemplatesuffix = configuration.getString("deftemplatesuffix", "");
         /* Default swamp shading off for 1.8, on after */
@@ -289,6 +276,23 @@ public class DynmapCore {
         bettergrass = configuration.getBoolean("better-grass", false);
         /* Load full render processing player limit */
         fullrenderplayerlimit = configuration.getInteger("fullrenderplayerlimit", 0);
+
+        /* Load block models */
+        HDBlockModels.loadModels(dataDirectory, configuration);
+        /* Load texture mappings */
+        TexturePack.loadTextureMapping(dataDirectory, configuration);
+        
+        /* Now, process worlds.txt - merge it in as an override of existing values (since it is only user supplied values) */
+        f = new File(dataDirectory, "worlds.txt");
+        if(!createDefaultFileFromResource("/worlds.txt", f)) {
+            return false;
+        }
+        world_config = new ConfigurationNode(f);
+        world_config.load();
+
+        /* Now, process templates */
+        loadTemplates();
+
         /* If we're persisting ids-by-ip, load it */
         persist_ids_by_ip = configuration.getBoolean("persist-ids-by-ip", true);
         if(persist_ids_by_ip)
@@ -357,7 +361,7 @@ public class DynmapCore {
     private void playerJoined(DynmapPlayer p) {
         playerList.updateOnlinePlayers(null);
         if(fullrenderplayerlimit > 0) {
-            if((getServer().getOnlinePlayers().length+1) >= fullrenderplayerlimit) {
+            if(getServer().getOnlinePlayers().length >= fullrenderplayerlimit) {
                 if(getPauseFullRadiusRenders() == false) {  /* If not paused, pause it */
                     setPauseFullRadiusRenders(true);
                     Log.info("Pause full/radius renders - player limit reached");
@@ -389,7 +393,8 @@ public class DynmapCore {
     private void playerQuit(DynmapPlayer p) {
         playerList.updateOnlinePlayers(p.getName());
         if(fullrenderplayerlimit > 0) {
-            if((getServer().getOnlinePlayers().length-1) < fullrenderplayerlimit) {
+            /* Quitting player is still online at this moment, so discount count by 1 */
+            if((getServer().getOnlinePlayers().length - 1) < fullrenderplayerlimit) {
                 if(didfullpause) {  /* Only unpause if we did the pause */
                     setPauseFullRadiusRenders(false);
                     Log.info("Resume full/radius renders - below player limit");
@@ -491,8 +496,13 @@ public class DynmapCore {
         if (webServer != null) {
             try {
                 webServer.stop();
-                while(webServer.isStopping())
-                    Thread.sleep(100);
+                for(int i = 0; i < 100; i++) {	/* Limit wait to 10 seconds */
+                	if(webServer.isStopping())
+                		Thread.sleep(100);
+                }
+                if(webServer.isStopping()) {
+                	Log.warning("Graceful shutdown timed out - continuing to terminate");
+                }
             } catch (Exception e) {
                 Log.severe("Failed to stop WebServer!", e);
             }
@@ -614,6 +624,9 @@ public class DynmapCore {
     public boolean processCommand(DynmapCommandSender sender, String cmd, String commandLabel, String[] args) {
         if(cmd.equalsIgnoreCase("dmarker")) {
             return MarkerAPIImpl.onCommand(this, sender, cmd, commandLabel, args);
+        }
+        if (cmd.equalsIgnoreCase("dmap")) {
+            return dmapcmds.processCommand(sender, cmd, commandLabel, args, this);
         }
         if (!cmd.equalsIgnoreCase("dynmap"))
             return false;
@@ -931,19 +944,22 @@ public class DynmapCore {
             worlds = new ArrayList<Map<String,Object>>();
             world_config.put("worlds", worlds);
         }
+        boolean did_upd = false;
         for(int idx = 0; idx < worlds.size(); idx++) {
             Map<String,Object> m = worlds.get(idx);
             if(wname.equals(m.get("name"))) {
-                worlds.remove(idx);
+                worlds.set(idx, finalConfiguration);
+                did_upd = true;
                 break;
             }
         }
-        worlds.add(finalConfiguration);
+        if(!did_upd)
+            worlds.add(finalConfiguration);
                 
         return finalConfiguration;
     }
     
-    private ConfigurationNode getDefaultTemplateConfigurationNode(DynmapWorld world) {
+    ConfigurationNode getDefaultTemplateConfigurationNode(DynmapWorld world) {
         String environmentName = world.getEnvironment();
         if(deftemplatesuffix.length() > 0) {
             environmentName += "-" + deftemplatesuffix;
@@ -961,7 +977,7 @@ public class DynmapCore {
         return new ConfigurationNode();
     }
     
-    private ConfigurationNode getTemplateConfigurationNode(String templateName) {
+    ConfigurationNode getTemplateConfigurationNode(String templateName) {
         ConfigurationNode templatesNode = configuration.getNode("templates");
         if (templatesNode != null) {
             return templatesNode.getNode(templateName);
@@ -1182,6 +1198,10 @@ public class DynmapCore {
         return playerList.isVisiblePlayer(player);
     }
 
+    public void assertPlayerInvisibility(String player, boolean is_invisible, String plugin_id) {
+        playerList.assertInvisiblilty(player, is_invisible, plugin_id);
+    }
+
     public void postPlayerMessageToWeb(String playerid, String playerdisplay, String message) {
         if(playerdisplay == null) playerdisplay = playerid;
         if(mapManager != null)
@@ -1234,6 +1254,120 @@ public class DynmapCore {
     /* Called by plugin when world loaded */
     public boolean processWorldLoad(DynmapWorld w) {
         return mapManager.activateWorld(w);
+    }
+    /* Enable/disable world */
+    public boolean setWorldEnable(String wname, boolean isenab) {
+        List<Map<String,Object>> worlds = world_config.getMapList("worlds");
+        for(Map<String,Object> m : worlds) {
+            String wn = (String)m.get("name");
+            if((wn != null) && (wn.equals(wname))) {
+                m.put("enabled", isenab);
+                return true;
+            }
+        }
+        /* If not found, and disable, add disable node */
+        if(isenab == false) {
+            Map<String,Object> newworld = new LinkedHashMap<String,Object>();
+            newworld.put("name", wname);
+            newworld.put("enabled", isenab);
+        }
+        return true;
+    }
+    public boolean setWorldZoomOut(String wname, int xzoomout) {
+        List<Map<String,Object>> worlds = world_config.getMapList("worlds");
+        for(Map<String,Object> m : worlds) {
+            String wn = (String)m.get("name");
+            if((wn != null) && (wn.equals(wname))) {
+                m.put("extrazoomout", xzoomout);
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean setWorldCenter(String wname, DynmapLocation loc) {
+        List<Map<String,Object>> worlds = world_config.getMapList("worlds");
+        for(Map<String,Object> m : worlds) {
+            String wn = (String)m.get("name");
+            if((wn != null) && (wn.equals(wname))) {
+                if(loc != null) {
+                    Map<String,Object> c = new LinkedHashMap<String,Object>();
+                    c.put("x", loc.x);
+                    c.put("y", loc.y);
+                    c.put("z", loc.z);
+                    m.put("center", c);
+                }
+                else {
+                    m.remove("center");
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean setWorldOrder(String wname, int order) {
+        List<Map<String,Object>> worlds = world_config.getMapList("worlds");
+        ArrayList<Map<String,Object>> newworlds = new ArrayList<Map<String,Object>>(worlds);
+
+        Map<String,Object> w = null;
+        for(Map<String,Object> m : worlds) {
+            String wn = (String)m.get("name");
+            if((wn != null) && (wn.equals(wname))) {
+                w = m;
+                newworlds.remove(m);   /* Remove from list */
+                break;
+            }
+        }
+        if(w != null) { /* If found it, add back at right pount */
+            if(order >= newworlds.size()) {    /* At end? */
+                newworlds.add(w);
+            }
+            else {
+                newworlds.add(order, w);
+            }
+            world_config.put("worlds", newworlds);
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean updateWorldConfig(DynmapWorld w) {
+        ConfigurationNode cn = w.saveConfiguration();
+        return replaceWorldConfig(w.getName(), cn);
+    }
+
+    public boolean replaceWorldConfig(String wname, ConfigurationNode cn) {
+        List<Map<String,Object>> worlds = world_config.getMapList("worlds");
+        if(worlds == null) {
+            worlds = new ArrayList<Map<String,Object>>();
+            world_config.put("worlds", worlds);
+        }
+        for(int i = 0; i < worlds.size(); i++) {
+            Map<String,Object> m = worlds.get(i);
+            String wn = (String)m.get("name");
+            if((wn != null) && (wn.equals(wname))) {
+                worlds.set(i, cn.entries);  /* Replace */
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean saveWorldConfig() {
+        boolean rslt = world_config.save();    /* Save world config */
+        updateConfigHashcode(); /* Update config hashcode */
+        return rslt;
+    }
+    
+    /* Refresh world config */
+    public boolean refreshWorld(String wname) {
+        saveWorldConfig();
+        if(mapManager != null) {
+            mapManager.deactivateWorld(wname);  /* Clean it up */
+            DynmapWorld w = getServer().getWorldByName(wname);  /* Get new instance */
+            if(w != null)
+                mapManager.activateWorld(w);    /* And activate it again */
+        }
+        return true;
     }
     
     /* Load core version */
