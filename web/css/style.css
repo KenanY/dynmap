@@ -434,6 +434,12 @@ img {
 }
 .playerlist { overflow: hidden }
 .worldlist { overflow: hidden }
+.dynmap .playerMarker {
+    -moz-transition: all .6s ease-in-out 0s;
+    -webkit-transition: all .6s ease-in-out 0s;
+    -o-transition: all .6s ease-in-out 0s;
+    transition: all .6s ease-in-out 0s;
+}
 .dynmap .playerIcon {
     margin-top: -16px;
     margin-left: -16px;
@@ -578,9 +584,6 @@ img {
     background-position: 1px center;
     margin: 4px;
     padding: 1px 1px 1px 15px;
-}
-.chatsendbutton {
-    background-color: #bbb;
 }
 .messagelist {
     color: white;
