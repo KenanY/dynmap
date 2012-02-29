@@ -1,5 +1,5 @@
 componentconstructors['coord'] = function(dynmap, configuration) {
-	
+    
 	var Coord = L.Class.extend({
 		valfield: $('<span/>'),
 		mcrfield: $('<span/>'),
@@ -37,7 +37,7 @@ componentconstructors['coord'] = function(dynmap, configuration) {
 	dynmap.map.addControl(coord);
 	dynmap.map.on('mousemove', function(mevent) {
 		if(!dynmap.map) return;
-		var loc = dynmap.getProjection().fromLatLngToLocation(mevent.latlng, 64);
+		var loc = dynmap.getProjection().fromLatLngToLocation(mevent.latlng, dynmap.world.sealevel+1);
 		if(configuration.hidey)
 			coord.valfield.text(Math.round(loc.x) + ',' + Math.round(loc.z));
 		else
