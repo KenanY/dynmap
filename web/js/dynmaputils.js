@@ -1,225 +1,382 @@
-var DynmapProjection = L.Class.extend({initialize:function(a) {
-  L.Util.setOptions(this, a)
-}, fromLocationToLatLng:function() {
-  throw"fromLocationToLatLng not implemented";
-}, fromLatLngToLocation:function() {
-  return null
-}});
-Array.prototype.indexOf || (Array.prototype.indexOf = function(a) {
-  if(void 0 === this || null === this) {
-    throw new TypeError;
-  }
-  var d = Object(this), c = d.length >>> 0;
-  if(0 === c) {
-    return-1
-  }
-  var b = 0;
-  0 < arguments.length && (b = Number(arguments[1]), b !== b ? b = 0 : 0 !== b && b !== 1 / 0 && b !== -(1 / 0) && (b = (0 < b || -1) * Math.floor(Math.abs(b))));
-  if(b >= c) {
-    return-1
-  }
-  for(b = 0 <= b ? b : Math.max(c - Math.abs(b), 0);b < c;b++) {
-    if(b in d && d[b] === a) {
-      return b
-    }
-  }
-  return-1
+var DynmapProjection = L.Class.extend({
+	initialize: function(options) {
+		L.Util.setOptions(this, options);
+	},
+	fromLocationToLatLng: function(location) {
+		throw "fromLocationToLatLng not implemented";
+	},
+	fromLatLngToLocation: function(location) {
+		return null;
+	}
 });
-var DynmapLayerControl = L.Control.Layers.extend({getPosition:function() {
-  return L.Control.Position.TOP_LEFT
-}}), DynmapTileLayer = L.TileLayer.extend({_currentzoom:void 0, getProjection:function() {
-  return this.projection
-}, onTileUpdated:function(a, d) {
-  var c = this.dynmap.getTileUrl(d);
-  a.attr("src", c);
-  a.show()
-}, getTileName:function() {
-  throw"getTileName not implemented";
-}, getTileUrl:function(a, d) {
-  var c = this.getTileName(a, d), b = this._cachedTileUrls[c];
-  b || (this._cachedTileUrls[c] = b = this.options.dynmap.getTileUrl(c));
-  return b
-}, updateNamedTile:function(a) {
-  var d = this._namedTiles[a];
-  delete this._cachedTileUrls[a];
-  d && this.updateTile(d)
-}, updateTile:function(a) {
-  this._loadTile(a, a.tilePoint, this._map.getZoom())
-}, _addTilesFromCenterOut:function(a) {
-  if(null != this._container) {
-    for(var d = [], c = a.getCenter(), b = a.min.y;b <= a.max.y;b++) {
-      for(var e = a.min.x;e <= a.max.x;e++) {
-        e + ":" + b in this._tiles || d.push(new L.Point(e, b))
-      }
-    }
-    d.sort(function(a, b) {
-      return a.distanceTo(c) - b.distanceTo(c)
-    });
-    a = document.createDocumentFragment();
-    this._tilesToLoad = d.length;
-    b = 0;
-    for(e = this._tilesToLoad;b < e;b++) {
-      this._addTile(d[b], a)
-    }
-    this._container.appendChild(a)
-  }
-}, _addTile:function(a, d) {
-  var c = this._getTilePos(a), b = this._map.getZoom(), e = a.x + ":" + a.y, g = this.getTileName(a, b), f = 1 << b;
-  if(!this.options.continuousWorld) {
-    if(this.options.noWrap) {
-      if(0 > a.x || a.x >= f) {
-        this._tilesToLoad--;
-        return
-      }
-    }else {
-      a.x = (a.x % f + f) % f
-    }
-    if(0 > a.y || a.y >= f) {
-      this._tilesToLoad--;
-      return
-    }
-  }
-  var h = this._createTile();
-  h.tileName = g;
-  h.tilePoint = a;
-  L.DomUtil.setPosition(h, c);
-  this._tiles[e] = h;
-  this._namedTiles[g] = h;
-  "tms" == this.options.scheme && (a.y = f - a.y - 1);
-  this._loadTile(h, a, b);
-  d.appendChild(h)
-}, _loadTile:function(a, d, c) {
-  function b() {
-    e._loadingTiles.splice(e._loadingTiles.indexOf(a), 1);
-    e._nextLoadTile()
-  }
-  var e = this;
-  a._layer = this;
-  a.onload = function(a) {
-    e._tileOnLoad.apply(this, [a]);
-    b()
-  };
-  a.onerror = function() {
-    e._tileOnError.apply(this);
-    b()
-  };
-  a.loadSrc = function() {
-    e._loadingTiles.push(a);
-    a.src = e.getTileUrl(d, c)
-  };
-  this._loadQueue.push(a);
-  this._nextLoadTile()
-}, _nextLoadTile:function() {
-  if(!(4 < this._loadingTiles.length)) {
-    var a = this._loadQueue.shift();
-    a && a.loadSrc()
-  }
-}, _removeOtherTiles:function(a) {
-  var d, c, b;
-  for(b in this._tiles) {
-    if(this._tiles.hasOwnProperty(b) && (d = b.split(":"), c = parseInt(d[0], 10), d = parseInt(d[1], 10), c < a.min.x || c > a.max.x || d < a.min.y || d > a.max.y)) {
-      c = this._tiles[b], c.parentNode === this._container && this._container.removeChild(this._tiles[b]), delete this._namedTiles[c.tileName], delete this._tiles[b]
-    }
-  }
-}, _updateTileSize:function() {
-  var a = this._map.getZoom();
-  if(this._currentzoom !== a) {
-    var d = this.calculateTileSize(a);
-    this._currentzoom = a;
-    d !== this.options.tileSize && this.setTileSize(d)
-  }
-}, _reset:function() {
-  this._updateTileSize();
-  this._tiles = {};
-  this._namedTiles = {};
-  this._loadQueue = [];
-  this._loadingTiles = [];
-  this._cachedTileUrls = {};
-  this._initContainer();
-  this._container.innerHTML = ""
-}, _update:function() {
-  this._updateTileSize();
-  var a = this._map.getPixelBounds(), d = this.options.tileSize, c = new L.Point(Math.floor(a.min.x / d), Math.floor(a.min.y / d)), a = new L.Point(Math.floor(a.max.x / d), Math.floor(a.max.y / d)), c = new L.Bounds(c, a);
-  this._addTilesFromCenterOut(c);
-  this.options.unloadInvisibleTiles && this._removeOtherTiles(c)
-}, calculateTileSize:function(a) {
-  return 128 << Math.max(0, this.options.mapzoomin - (this.options.maxZoom - a))
-}, setTileSize:function(a) {
-  this.options.tileSize = a;
-  this._tiles = {};
-  this._createTileProto()
-}, updateTileSize:function() {
-}, zoomprefix:function(a) {
-  return"zzzzzzzzzzzzzzzzzzzzzz".substr(0, a)
-}, getTileInfo:function(a, d) {
-  var c = Math.max(0, this.options.maxZoom - d - this.options.mapzoomin), b = 1 << c, e = b * a.x, b = b * a.y;
-  return{prefix:this.options.prefix, nightday:this.options.nightandday && this.options.dynmap.serverday ? "_day" : "", scaledx:e >> 5, scaledy:b >> 5, zoom:this.zoomprefix(c), zoomprefix:0 == c ? "" : this.zoomprefix(c) + "_", x:e, y:b, fmt:this.options["image-format"] || "png"}
-}});
-function loadjs(a, d) {
-  var c = document.createElement("script");
-  c.setAttribute("src", a);
-  c.setAttribute("type", "text/javascript");
-  var b = !1;
-  c.onload = function() {
-    b || (b = !0, d())
-  };
-  c.onreadystatechange = function() {
-    if("loaded" == c.readyState || "complete" == c.readyState) {
-      c.onload()
-    }
-  };
-  (document.head || document.getElementsByTagName("head")[0]).appendChild(c)
+
+if (!Array.prototype.indexOf) {
+	    Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+	        "use strict";
+	        if (this === void 0 || this === null) {
+	            throw new TypeError();
+	        }
+	        var t = Object(this);
+	        var len = t.length >>> 0;
+	        if (len === 0) {
+	            return -1;
+	        }
+	        var n = 0;
+	        if (arguments.length > 0) {
+	            n = Number(arguments[1]);
+	            if (n !== n) { // shortcut for verifying if it's NaN
+	                n = 0;
+	            } else if (n !== 0 && n !== (1 / 0) && n !== -(1 / 0)) {
+	                n = (n > 0 || -1) * Math.floor(Math.abs(n));
+	            }
+	        }
+	        if (n >= len) {
+	            return -1;
+	        }
+	        var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+	        for (; k < len; k++) {
+	            if (k in t && t[k] === searchElement) {
+	                return k;
+	            }
+	        }
+	        return -1;
+	    }
 }
-function loadcss(a, d) {
-  var c = document.createElement("link");
-  c.setAttribute("href", a);
-  c.setAttribute("rel", "stylesheet");
-  var b = !1;
-  d && (c.onload = function() {
-    b || (b = !0, d())
-  }, c.onreadystatechange = function() {
-    c.onload()
-  });
-  (document.head || document.getElementsByTagName("head")[0]).appendChild(c)
+
+var DynmapLayerControl = L.Control.Layers.extend({
+	getPosition: function() {
+		return L.Control.Position.TOP_LEFT;
+	}
+});
+	
+	
+var DynmapTileLayer = L.TileLayer.extend({
+	_currentzoom: undefined,
+	getProjection: function() {
+		return this.projection;
+	},
+	onTileUpdated: function(tile, tileName) {
+		var src = this.dynmap.getTileUrl(tileName);
+		tile.attr('src', src);
+		tile.show();
+	},
+	
+	getTileName: function(tilePoint, zoom) {
+		throw "getTileName not implemented";
+	},
+	
+	getTileUrl: function(tilePoint, zoom) {
+		var tileName = this.getTileName(tilePoint, zoom);
+		var url = this._cachedTileUrls[tileName];
+		if (!url) {
+			this._cachedTileUrls[tileName] = url = this.options.dynmap.getTileUrl(tileName);
+		}
+		return url;
+	},
+	
+	updateNamedTile: function(name) {
+		var tile = this._namedTiles[name];
+		delete this._cachedTileUrls[name];
+		if (tile) {
+			this.updateTile(tile);
+		}
+	},
+	
+	updateTile: function(tile) {
+		this._loadTile(tile, tile.tilePoint, this._map.getZoom());
+	},
+	// Override to fix loads completing after layer removed
+	_addTilesFromCenterOut: function(bounds) {
+		if(this._container == null)		// Ignore if we've stopped being active layer
+			return;
+		var queue = [],
+			center = bounds.getCenter();
+		
+		for (var j = bounds.min.y; j <= bounds.max.y; j++) {
+			for (var i = bounds.min.x; i <= bounds.max.x; i++) {				
+				if ((i + ':' + j) in this._tiles) { continue; }
+				queue.push(new L.Point(i, j));
+			}
+		}
+		
+		// load tiles in order of their distance to center
+		queue.sort(function(a, b) {
+			return a.distanceTo(center) - b.distanceTo(center);
+		});
+		
+		var fragment = document.createDocumentFragment();
+		
+		this._tilesToLoad = queue.length;
+		for (var k = 0, len = this._tilesToLoad; k < len; k++) {
+			this._addTile(queue[k], fragment);
+		}
+		
+		this._container.appendChild(fragment);
+	},
+	//Copy and mod of Leaflet method - marked changes with Dynmap: to simplify reintegration
+	_addTile: function(tilePoint, container) {
+		var tilePos = this._getTilePos(tilePoint),
+			zoom = this._map.getZoom(),
+			key = tilePoint.x + ':' + tilePoint.y,
+			name = this.getTileName(tilePoint, zoom),	//Dynmap
+			tileLimit = (1 << zoom);
+			
+		// wrap tile coordinates
+		if (!this.options.continuousWorld) {
+			if (!this.options.noWrap) {
+				tilePoint.x = ((tilePoint.x % tileLimit) + tileLimit) % tileLimit;
+			} else if (tilePoint.x < 0 || tilePoint.x >= tileLimit) {
+				this._tilesToLoad--;
+				return;
+			}
+			
+			if (tilePoint.y < 0 || tilePoint.y >= tileLimit) {
+				this._tilesToLoad--;
+				return;
+			}
+		}
+		
+		// create tile
+		var tile = this._createTile();
+		tile.tileName = name;	//Dynmap
+		tile.tilePoint = tilePoint;	//Dynmap
+		L.DomUtil.setPosition(tile, tilePos);
+		
+		this._tiles[key] = tile;
+		this._namedTiles[name] = tile;	//Dynmap
+        
+		if (this.options.scheme == 'tms') {
+			tilePoint.y = tileLimit - tilePoint.y - 1;
+		}
+
+		this._loadTile(tile, tilePoint, zoom);
+		
+		container.appendChild(tile);
+	},
+	_loadTile: function(tile, tilePoint, zoom) {
+		var me = this;
+		tile._layer = this;
+		function done() {
+			me._loadingTiles.splice(me._loadingTiles.indexOf(tile), 1);
+			me._nextLoadTile();
+		}
+		tile.onload = function(e) {
+			me._tileOnLoad.apply(this, [e]);
+			done();
+		}
+		tile.onerror = function() {
+			me._tileOnError.apply(this);
+			done();
+		}
+		tile.loadSrc = function() {
+			me._loadingTiles.push(tile);
+			tile.src = me.getTileUrl(tilePoint, zoom);
+		};
+		this._loadQueue.push(tile);
+		this._nextLoadTile();
+	},
+	_nextLoadTile: function() {
+		if (this._loadingTiles.length > 4) { return; }
+		var next = this._loadQueue.shift();
+		if (!next) { return; }
+		
+		next.loadSrc();
+	},
+	
+	_removeOtherTiles: function(bounds) {
+		var kArr, x, y, key;
+
+		for (key in this._tiles) {
+			if (this._tiles.hasOwnProperty(key)) {
+				kArr = key.split(':');
+				x = parseInt(kArr[0], 10);
+				y = parseInt(kArr[1], 10);
+
+				// remove tile if it's out of bounds
+				if (x < bounds.min.x || x > bounds.max.x || y < bounds.min.y || y > bounds.max.y) {
+					var tile = this._tiles[key];
+					if (tile.parentNode === this._container) {
+						this._container.removeChild(this._tiles[key]);
+					}
+					delete this._namedTiles[tile.tileName];
+					delete this._tiles[key];
+				}
+			}
+		}		
+	},
+	_updateTileSize: function() {
+		var newzoom = this._map.getZoom();
+		if (this._currentzoom !== newzoom) {
+			var newTileSize = this.calculateTileSize(newzoom);
+			this._currentzoom = newzoom;
+			if (newTileSize !== this.options.tileSize) {
+				this.setTileSize(newTileSize);
+			}
+		}
+	},
+	
+	_reset: function() {
+		this._updateTileSize();
+		this._tiles = {};
+		this._namedTiles = {};
+		this._loadQueue = [];
+		this._loadingTiles = [];
+		this._cachedTileUrls = {};
+		this._initContainer();
+		this._container.innerHTML = '';
+	},
+	
+	_update: function() {
+		this._updateTileSize();
+		var bounds = this._map.getPixelBounds(),
+		tileSize = this.options.tileSize;
+
+		var nwTilePoint = new L.Point(
+				Math.floor(bounds.min.x / tileSize),
+				Math.floor(bounds.min.y / tileSize)),
+			seTilePoint = new L.Point(
+				Math.floor(bounds.max.x / tileSize),
+				Math.floor(bounds.max.y / tileSize)),
+			tileBounds = new L.Bounds(nwTilePoint, seTilePoint);
+	
+		this._addTilesFromCenterOut(tileBounds);
+	
+		if (this.options.unloadInvisibleTiles) {
+			this._removeOtherTiles(tileBounds);
+		}
+	},
+	/*calculateTileSize: function(zoom) {
+		return this.options.tileSize;
+	},*/
+	calculateTileSize: function(zoom) {
+		// zoomoutlevel: 0 when izoom > mapzoomin, else mapzoomin - izoom (which ranges from 0 till mapzoomin)
+		var izoom = this.options.maxZoom - zoom;
+		var zoominlevel = Math.max(0, this.options.mapzoomin - izoom);
+		return 128 << zoominlevel;
+	},
+	setTileSize: function(tileSize) {
+		this.options.tileSize = tileSize;
+		this._tiles = {};
+		this._createTileProto();
+	},
+	updateTileSize: function(zoom) {},
+	
+	// Some helper functions.
+	zoomprefix: function(amount) {
+		return 'zzzzzzzzzzzzzzzzzzzzzz'.substr(0, amount);
+	},
+	getTileInfo: function(tilePoint, zoom) {
+		// zoom: max zoomed in = this.options.maxZoom, max zoomed out = 0
+		// izoom: max zoomed in = 0, max zoomed out = this.options.maxZoom
+		// zoomoutlevel: izoom < mapzoomin -> 0, else -> izoom - mapzoomin (which ranges from 0 till mapzoomout)
+		var izoom = this.options.maxZoom - zoom;
+		var zoomoutlevel = Math.max(0, izoom - this.options.mapzoomin);
+		var scale = 1 << zoomoutlevel;
+		var x = scale*tilePoint.x;
+		var y = scale*tilePoint.y;
+		return {
+			prefix: this.options.prefix,
+			nightday: (this.options.nightandday && this.options.dynmap.serverday) ? '_day' : '',
+			scaledx: x >> 5,
+			scaledy: y >> 5,
+			zoom: this.zoomprefix(zoomoutlevel),
+			zoomprefix: (zoomoutlevel==0)?"":(this.zoomprefix(zoomoutlevel)+"_"),
+			x: x,
+			y: y,
+			fmt: this.options['image-format'] || 'png'
+		};
+	}
+});
+
+function loadjs(url, completed) {
+	var script = document.createElement('script');
+	script.setAttribute('src', url);
+	script.setAttribute('type', 'text/javascript');
+	var isloaded = false;
+	script.onload = function() {
+		if (isloaded) { return; }
+		isloaded = true;
+		completed();
+	};
+	
+	// Hack for IE, don't know whether this still applies to IE9.
+	script.onreadystatechange = function() {
+		if (script.readyState == 'loaded' || script.readyState == 'complete')
+			script.onload();
+	};
+	(document.head || document.getElementsByTagName('head')[0]).appendChild(script);
 }
-function splitArgs(a) {
-  var d = a.split(" ");
-  delete arguments[0];
-  var c = {};
-  $.each(arguments, function(a, e) {
-    a && (c[e] = d[a - 1])
-  });
-  return c
+
+function loadcss(url, completed) {
+	var script = document.createElement('link');
+	script.setAttribute('href', url);
+	script.setAttribute('rel', 'stylesheet');
+	var isloaded = false;
+	if (completed) {
+		script.onload = function() {
+			if (isloaded) { return; }
+			isloaded = true;
+			completed();
+		};
+		
+		// Hack for IE, don't know whether this still applies to IE9.
+		script.onreadystatechange = function() {
+			script.onload();
+		};
+	}
+	
+	(document.head || document.getElementsByTagName('head')[0]).appendChild(script);
 }
-function swtch(a, d, c) {
-  return(d[a] || c || function() {
-  })(a)
+
+function splitArgs(s) {
+	var r = s.split(' ');
+	delete arguments[0];
+	var obj = {};
+	var index = 0;
+	$.each(arguments, function(argumentIndex, argument) {
+		if (!argumentIndex) { return; }
+		var value = r[argumentIndex-1];
+		obj[argument] = value;
+	});
+	return obj;
 }
-(function(a) {
-  a.fn.scrollHeight = function() {
-    return this[0].scrollHeight
-  }
+
+function swtch(value, options, defaultOption) {
+	return (options[value] || defaultOption || function(){})(value);
+}
+(function( $ ){
+	$.fn.scrollHeight = function(height) {
+		return this[0].scrollHeight;
+	};
 })($);
-function Location(a, d, c, b) {
-  this.world = a;
-  this.x = d;
-  this.y = c;
-  this.z = b
+
+function Location(world, x, y, z) {
+	this.world = world;
+	this.x = x;
+	this.y = y;
+	this.z = z;
 }
-function namedReplace(a, d) {
-  for(var c = 0, b = "";;) {
-    var e = a.indexOf("{", c), g = a.indexOf("}", e + 1);
-    if(0 > e || 0 > g) {
-      b += a.substr(c);
-      break
-    }
-    if(e < g) {
-      var f = a.substring(e + 1, g), b = b + a.substring(c, e), b = b + d[f]
-    }else {
-      b += a.substring(c, e - 1), b += ""
-    }
-    c = g + 1
-  }
-  return b
+
+function namedReplace(str, obj)
+{
+	var startIndex = 0;
+	var result = '';
+	while(true) {
+		var variableBegin = str.indexOf('{', startIndex);
+		var variableEnd = str.indexOf('}', variableBegin+1);
+		if (variableBegin < 0 || variableEnd < 0) {
+			result += str.substr(startIndex);
+			break;
+		}
+		if (variableBegin < variableEnd) {
+			var variableName = str.substring(variableBegin+1, variableEnd);
+			result += str.substring(startIndex, variableBegin);
+			result += obj[variableName];
+		} else /* found '{}' */ {
+			result += str.substring(startIndex, variableBegin-1);
+			result += '';
+		}
+		startIndex = variableEnd+1;
+	}
+	return result;
 }
-;
