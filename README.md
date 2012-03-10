@@ -6,12 +6,12 @@ This is a fork of the [main Dynmap repository](https://github.com/webbukkit/dynm
 
 * Moved `charset` to the top of `index.html` because it should be found in the first [mebibyte][].
 * Removed unnecessary whitespace in both `index.html` and the CSS files.
-* Moved JavaScript to the bottom of `index.html` so that the page content can load first. Although this is a tile map anyways, it's a habit of mine.
-* Use Google CDN's jQuery because it's likely to have been cached previously. Fallback to a local copy if offline as well.
+* Moved JavaScript to the bottom of `index.html` so that the page content can load first (although this is kind of useless since it's a tile map).
+* Use Google CDN's jQuery because it's likely to have been cached previously. Also added an offline fallback.
 * Combined CSS files so that less files are loaded.
 * Minified CSS files to save a few bytes and thus maps load faster.
 * Added [normalize.css][] to retain useful browser defaults and include several common fixes to improve cross-browser styling consistency
-* Modernizr!
+* Modernizr
 
 ### Installation
 
@@ -23,7 +23,7 @@ Because I've been having trouble compiling the Dynmap source, I'm unable to buil
 * [Download my fork](https://github.com/KenanY/dynmap/downloads)
 * Unzip the contents
 * Copy the contents of the `web` folder (from my fork) into `minecraft_server/plugins/dynmap/web`
-* Overwrite anything necessary
+* Overwrite anything and everything
 * Run your server
 * Point your browser to `http://localhost:8123/` (the default Dynmap port is 8123)
 
