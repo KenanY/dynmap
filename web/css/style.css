@@ -589,11 +589,10 @@ img {
     color: white;
     overflow: hidden;
     width: 622px;
-    max-height: 198px;
+    max-height: 6em;
     margin: 4px 4px 0 4px;
     padding: 1px;
 }
-.scrollback { max-height: 6em!important }
 .scrollback:hover { overflow-y: auto!important }
 .messagerow {
     position: relative;
@@ -668,7 +667,7 @@ img {
     background-color: #bbb;
     border-style: solid;
     padding: 2px;
-    width: 80px;
+    min-width: 80px;
     -moz-border-radius: 5px;
     border-radius: 5px;
 }

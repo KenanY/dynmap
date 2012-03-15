@@ -1,5 +1,5 @@
 componentconstructors['chatbox'] = function(dynmap, configuration) {
-    var me = this;
+	var me = this;
 	
 	if(dynmap.getBoolParameterByName("hidechat"))
 		return;
@@ -10,6 +10,13 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 	var messagelist = $('<div/>')
 		.addClass('messagelist')
 		.appendTo(chat);
+
+	if (configuration.visiblelines) {
+		messagelist.css('max-height', configuration.visiblelines + 'em');
+	}
+	else {
+		messagelist.css('max-height', '6em');
+	}	
 
 	if (configuration.scrollback) {
 		messagelist.addClass('scrollback')

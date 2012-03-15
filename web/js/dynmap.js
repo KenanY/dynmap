@@ -1,17 +1,3 @@
-// ==ClosureCompiler==
-// @compilation_level SIMPLE_OPTIMIZATIONS
-// @output_file_name dynmap.js
-// @code_url https://raw.github.com/KenanY/dynmap/master/web/js/leaflet.js
-// @code_url https://raw.github.com/KenanY/dynmap/master/web/js/custommarker.js
-// @code_url https://raw.github.com/KenanY/dynmap/master/web/js/dynmaputils.js
-// @code_url https://raw.github.com/KenanY/dynmap/master/web/js/jquery.json.js
-// @code_url https://raw.github.com/KenanY/dynmap/master/web/js/jquery.mousewheel.js
-// @code_url https://raw.github.com/KenanY/dynmap/master/web/js/minecraft.js
-// @code_url https://raw.github.com/KenanY/dynmap/master/web/js/map.js
-// @code_url https://raw.github.com/KenanY/dynmap/master/web/js/hdmap.js
-// @code_url https://raw.github.com/KenanY/dynmap/master/web/js/kzedmaps.js
-// @code_url https://raw.github.com/KenanY/dynmap/master/web/js/flatmap.js
-// ==/ClosureCompiler==
 (function(a){var b={VERSION:"0.3",ROOT_URL:function(){for(var a=document.getElementsByTagName("script"),b=/^(.*\/)leaflet-?([\w-]*)\.js.*$/,e=0,f=a.length;e<f;e++){var g=a[e].src;if(g=g&&g.match(b)){if("include"==g[2])break;return g[1]}}return"../../dist/"}(),noConflict:function(){a.L=this._originalL;return this},_originalL:a.L};window.L=b})(this);
 L.Util={extend:function(a){for(var b=Array.prototype.slice.call(arguments,1),c=0,d=b.length,e;c<d;c++){e=b[c]||{};for(var f in e)e.hasOwnProperty(f)&&(a[f]=e[f])}return a},bind:function(a,b){return function(){return a.apply(b,arguments)}},stamp:function(){var a=0;return function(b){b._leaflet_id=b._leaflet_id||++a;return b._leaflet_id}}(),requestAnimFrame:function(){function a(a){window.setTimeout(a,1E3/60)}var b=window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||
 window.oRequestAnimationFrame||window.msRequestAnimationFrame||a;return function(c,d,e){c=d?L.Util.bind(c,d):d;e&&b===a?c():b(c)}}(),limitExecByInterval:function(a,b,c){function d(){e=!1;f&&(g.callee.apply(c,g),f=!1)}var e,f,g;return function(){g=arguments;e?f=!0:(e=!0,setTimeout(d,b),a.apply(c,g))}},falseFn:function(){return!1},formatNum:function(a,b){var c=Math.pow(10,b||5);return Math.round(a*c)/c},setOptions:function(a,b){a.options=L.Util.extend({},a.options,b)},getParamString:function(a){var b=
