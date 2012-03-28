@@ -1,5 +1,5 @@
 componentconstructors['playermarkers'] = function(dynmap, configuration) {
-  var me = this;
+	var me = this;
 	$(dynmap).bind('playeradded', function(event, player) {
 		// Create the player-marker.
 		var markerPosition = dynmap.getProjection().fromLocationToLatLng(player.location);

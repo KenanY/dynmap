@@ -25,7 +25,7 @@ function DynMap(options) {
 	me.options = options;
 	$.getJSON(me.options.url.configuration, function(configuration) {
 		if(configuration.error == 'login-required') {
-			window.location = 'login/login.html';
+			window.location = 'login.html';
 		}
 		else if(configuration.error) {	
 			alert(configuration.error);
@@ -562,7 +562,7 @@ DynMap.prototype = {
 
 				if(update.error) {
 					if(update.error == 'login-required') {
-						window.location = 'login/login.html';
+						window.location = 'login.html';
 					}
 					else {
 						alert(update.error);
@@ -878,7 +878,7 @@ DynMap.prototype = {
 			
 		var login = L.Class.extend({
 			onAdd: function(map) {
-				this._container = L.DomUtil.create('div', 'leaflet-control-attribution');
+				this._container = L.DomUtil.create('div', 'logincontainer');
 				this._map = map;
 				this._update();
 			},
@@ -893,7 +893,14 @@ DynMap.prototype = {
 				var c = this._container;
 				if (me.options.loggedin) {
 					c = $('<button/>').addClass('loginbutton').click(function(event) {
-						window.location = "up/login";
+						$.ajax({
+							type: 'POST',
+		        				contentType: "application/json; charset=utf-8",
+								url: config.url.login,
+								success: function(response) {
+									window.location = "index.html";
+								},
+						});
 					}).text('Logout').appendTo(c)[0];
 				}
 				else {

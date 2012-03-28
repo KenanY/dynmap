@@ -1,5 +1,5 @@
 componentconstructors['coord'] = function(dynmap, configuration) {
-    
+	
 	var Coord = L.Class.extend({
 		valfield: $('<span/>'),
 		mcrfield: $('<span/>'),
