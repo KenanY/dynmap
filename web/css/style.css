@@ -585,9 +585,7 @@ img {
     margin: 4px;
     padding: 1px 1px 1px 15px;
 }
-.loginbutton {
-    background-color: #bbb;
-}
+.loginbutton { background-color: #bbb }
 .messagelist {
     color: white;
     overflow: hidden;
@@ -708,18 +706,18 @@ img {
     text-align: center;
     width: 100%;
     font-weight: bold;
-    color: #FFFFFF;
-    background: #000000;
+    color: #fff;
+    background: #000;
 }
 table.loginregister {
-	color: #ffffff;
+    color: #fff;
     border: 1px solid rgba(64,64,64,0.6);
-	background: #bbb;
+    background: #bbb;
     font-weight: bold;
 }
 td.login {
     vertical-align: top;
-    color: #000000;
+    color: #000;
     background-color: #bbb;
     border: 1px solid rgba(64,64,64,0.6);
     font-weight: bold;
@@ -728,18 +726,16 @@ td.login {
 }
 td.register {
     vertical-align: top;
-	color: #000000;
-	background-color: #bbb;
+    color: #000;
+    background-color: #bbb;
     border: 1px solid rgba(64,64,64,0.6);
     font-weight: bold;
     margin: 2em;
     width: 40em;
 }
 div.statusmessage {
-	color: #FF0000;
+    color: #f00;
     font-weight: bold;
     font-size: 24px;
 }
-.logincontainer {
-    background-color: rgba(0,0,0,0.0);
-}
+.logincontainer { background-color: rgba(0,0,0,0.0) }
