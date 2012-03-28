@@ -899,7 +899,7 @@ DynMap.prototype = {
 								url: config.url.login,
 								success: function(response) {
 									window.location = "index.html";
-								},
+								}
 						});
 					}).text('Logout').appendTo(c)[0];
 				}
