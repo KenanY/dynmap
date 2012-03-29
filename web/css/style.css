@@ -697,4 +697,5 @@ div.statusmessage {
     font-weight: bold;
     font-size: 24px;
 }
+.pinnedloginbutton { margin-right: 200px }
 .logincontainer { background-color: rgba(0,0,0,0.0) }
