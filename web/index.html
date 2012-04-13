@@ -24,7 +24,7 @@
     <!--<link rel="stylesheet" type="text/css" href="css/embedded.css" media="screen" />-->
     <link rel="stylesheet" href="css/style.min.css">
     <!-- <link rel="stylesheet" type="text/css" href="css/override.css" media="screen" /> -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.5.3/modernizr.min.js"></script>
+    <script src="js/modernizr-2.5.3.min.js"></script>
 </head>
 <body>
     <div id="mcmap"></div>
@@ -34,7 +34,7 @@
                 load: '//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',
                 complete: function () {
                     if ( !window.jQuery ) {
-                        Modernizr.load('js/libs/jquery-1.7.1.min.js');
+                        Modernizr.load('js/libs/jquery.min.js');
                     }
                 }
             },
