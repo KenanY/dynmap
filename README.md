@@ -1,17 +1,17 @@
 # Dynmap - Realtime Minecraft maps
 
-This is a fork of the [main Dynmap repository](https://github.com/webbukkit/dynmap). Actually, **this isn't 100% true anymore** because the authors of Dynmap have [split](https://github.com/webbukkit/dynmap/commit/fc319a2d32f6d5edecd9b7a287fb71a685495736) the plugin between two repositories: the original and [DynmapCore](https://github.com/webbukkit/DynmapCore). This fork focuses on the web front-end of Dynmap, instead of the Java that's working behind the scenes. Because the web portion of Dynmap is **now** found in DynmapCore, this is now actually a fork of DynmapCore, although it was originally a fork of Dynmap **before** the split.
+This is a fork of the [main Dynmap repository][Dynmap repo]. Actually, **this isn't 100% true anymore** because the authors of Dynmap have [split][1] the plugin between two repositories: the original and [DynmapCore][]. This fork focuses on the web front-end of Dynmap, instead of the Java that's working behind the scenes. Because the web portion of Dynmap is **now** found in DynmapCore, this is now actually a fork of DynmapCore, although it was originally a fork of Dynmap **before** the split.
 
 ### What's different?
 
-* Moved `charset` to the top of `index.html` because it should be found in the first [mebibyte][].
+* As recommended by [the HTML5 spec][2] (4.2.5.5 Specifying the document's character encoding), I've moved the charset declaration to just after the `<head>` tag to avoid a potential encoding-related security issue in IE. It should come in the first 1024 bytes. Also, the charset should also come before the `<title>` tag, due to potential XSS vectors.
 * Removed unnecessary whitespace in both `index.html` and the CSS files.
 * Moved JavaScript to the bottom of `index.html` so that the page content can load first (although this is kind of useless since it's a tile map).
 * Use Google CDN's jQuery because it's likely to have been cached previously. Also added an offline fallback.
 * Combined CSS files so that less files are loaded.
 * Minified CSS files to save a few bytes and thus maps load faster.
 * Added [normalize.css][] to retain useful browser defaults and include several common fixes to improve cross-browser styling consistency
-* Modernizr
+* Modernizr. This allows me to use `Modernizr.load` and load all the JavaScript files asynchronously  and in parallel.
 
 ### Installation
 
@@ -19,10 +19,10 @@ _Note that these are the installation instructions for this fork, not the origin
 
 Because I've been having trouble compiling the Dynmap source, I'm unable to build the entire plugin which would've allowed you (the server admin) to install my fork instead of the actual Dynmap. Nevertheless, you can still install my fork the hard way: 
 
-* I'll assume that you have the [latest recommended build of Bukkit](http://dl.bukkit.org/downloads/craftbukkit/list/rb/), you've installed the latest stable version of Dynmap ([0.36.3](http://webbukkit.org/jenkins/public/dynmap/dynmap-0.36.3-bin.zip)) successfully, and that directory your server is located is called `minecraft_server` (this is only for instruction purposes, the directory name doesn't matter to Bukkit)
+* I'll assume that you have the [latest recommended build of Bukkit][rb build], you've installed the latest stable version of Dynmap ([0.36.3][stable Dynmap]; _~2.1 MB_) successfully
 * [Download my fork](https://github.com/KenanY/dynmap/downloads)
 * Unzip the contents
-* Copy the contents of the `web` folder (from my fork) into `minecraft_server/plugins/dynmap/web`
+* Copy the contents of the `web` folder (from my fork) into `plugins/dynmap/web`
 * Overwrite anything and everything
 * Run your server
 * Point your browser to `http://localhost:8123/` (the default Dynmap port is 8123)
@@ -44,12 +44,18 @@ If the map is shown properly, then you've done everything correctly. Make sure y
 * Weather on map
 
    [Dynmap]: http://forums.bukkit.org/threads/489
+   [Dynmap repo]: https://github.com/webbukkit/dynmap
+   [DynmapCore]: https://github.com/webbukkit/DynmapCore
    [Bukkit]: http://bukkit.org/
    [Google Maps]: https://maps.google.com/
    [Minecraft]: https://minecraft.net/
    [normalize.css]: http://necolas.github.com/normalize.css/
-   [mebibyte]: https://en.wikipedia.org/wiki/Mebibyte
+   [rb build]: http://dl.bukkit.org/downloads/craftbukkit/list/rb/
+   [stable Dynmap]: http://webbukkit.org/jenkins/public/dynmap/dynmap-0.36.3-bin.zip
    [Google Chrome]: http://www.google.com/chrome/
    [Safari]: http://www.apple.com/safari/
    [Opera]: http://www.opera.com/browser/
    [Internet Explorer]: http://www.microsoft.com/windows/internet-explorer/
+
+   [1]: https://github.com/webbukkit/dynmap/commit/fc319a2d32f6d5edecd9b7a287fb71a685495736
+   [2]: http://www.whatwg.org/specs/web-apps/current-work/complete/semantics.html#charset
