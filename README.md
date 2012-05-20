@@ -11,7 +11,7 @@ This is a fork of the [main Dynmap repository][Dynmap repo]. Actually, **this is
 * Combined CSS files so that less files are loaded.
 * Minified CSS files to save a few bytes and thus maps load faster.
 * Added [normalize.css][] to retain useful browser defaults and include several common fixes to improve cross-browser styling consistency
-* Modernizr. This allows me to use `Modernizr.load` and load all the JavaScript files asynchronously  and in parallel.
+* Modernizr. This allows me to use `Modernizr.load` and load all the JavaScript files asynchronously and in parallel.
 
 ### Installation
 
