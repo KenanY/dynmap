@@ -1,6 +1,6 @@
 componentconstructors['chatbox'] = function(dynmap, configuration) {
 	var me = this;
-
+	
 	if(dynmap.getBoolParameterByName("hidechat"))
 		return;
 	var chat = $('<div/>')
@@ -15,11 +15,11 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 	}
 	else {
 		messagelist.css('max-height', '6em');
-	}
+	}	
 
 	if (configuration.scrollback) {
 		messagelist.addClass('scrollback')
-			.click( function() { $(this).hide(); } );
+			.click( function() { $(this).hide(); } );		 
 	}
 
 	if (dynmap.options.allowwebchat) {
@@ -51,7 +51,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 		}
 		chatinput.appendTo(chat);
 		if (configuration.scrollback) {
-			chatinput.click(function(){
+			chatinput.click(function(){ 
 				var m = $('.messagelist');
 				m.show().scrollTop(m.scrollHeight());
 			});
@@ -63,7 +63,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 	  	}).text(dynmap.options['msg-chatrequireslogin']).appendTo(chat);
 	  }
 	}
-
+	
 	var addrow = function(row) {
 		if (configuration.scrollback) {
 			var c = messagelist.children();
@@ -75,21 +75,21 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 		messagelist.show();
 		messagelist.scrollTop(messagelist.scrollHeight());
 	};
-
+	
 	$(dynmap).bind('playerjoin', function(event, playername) {
 		addrow($('<div/>')
 			.addClass('messagerow')
 			.text(dynmap.options.joinmessage.replace('%playername%', playername))
 			);
 	});
-
+	
 	$(dynmap).bind('playerquit', function(event, playername) {
 		addrow($('<div/>')
 			.addClass('messagerow')
 			.text(dynmap.options.quitmessage.replace('%playername%', playername))
 			);
 	});
-
+	
 	$(dynmap).bind('chat', function(event, message) {
 		var playerName = message.name;
 		var playerAccount = message.account;
@@ -114,7 +114,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 			.text('[' + message.channel + '] ')
 			.appendTo(messageRow);
 		}
-
+			
 		if (message.source === 'player' && configuration.showworld) {
 			var playerWorldContainer = $('<span/>')
 			 .addClass('messagetext')
@@ -126,7 +126,7 @@ componentconstructors['chatbox'] = function(dynmap, configuration) {
 		if(message.name) {
 			playerNameContainer = $('<span/>').addClass('messagetext').text(' '+message.name+': ');
 		}
-
+		
 		var playerMessageContainer = $('<span/>')
 			.addClass('messagetext')
 			.text(chat_encoder(message));

@@ -1,5 +1,7 @@
 <?php
+ob_start();
 require('dynmap_login.php');
+ob_end_clean();
 
 session_start();
 
@@ -16,7 +18,7 @@ else {
   $verify = '';
 }
 if(strcmp($password, $verify)) {
-  echo "{ \"result\": \"verifyfailed\" }";
+  echo "{ \"result\": \"verifyfailed\" }"; 
   return;
 }
 
@@ -50,29 +52,29 @@ if(strcmp($useridlc, '-guest-')) {
         $_SESSION['userid'] = $userid;
         $good = true;
 
-    $newlines[] = '<?php /*';
-    $lines = file('dynmap_reg.php');
-    if(!empty($lines)) {
-      $cnt = count($lines) - 1;
-      for($i=1; $i < $cnt; $i++) {
-        list($uid, $pc, $hsh) = split('=', rtrim($lines[$i]));
-        if($uid == $useridlc) continue;
-        if(array_key_exists($uid, $pendingreg)) {
-          $newlines[] = $uid . '=' . $pc . '=' . $hsh;
-        }
-      }
-    }
-    $newlines[] = $useridlc . '=' . $passcode . '=' . $hash;
-    $newlines[] = '*/ ?>';
-    file_put_contents('dynmap_reg.php', implode("\n", $newlines));
+		$newlines[] = '<?php /*';
+		$lines = file('dynmap_reg.php');
+		if(!empty($lines)) {
+			$cnt = count($lines) - 1;
+			for($i=1; $i < $cnt; $i++) {
+				list($uid, $pc, $hsh) = split('=', rtrim($lines[$i]));
+				if($uid == $useridlc) continue;
+				if(array_key_exists($uid, $pendingreg)) {
+					$newlines[] = $uid . '=' . $pc . '=' . $hsh;
+				}
+			}
+		}
+		$newlines[] = $useridlc . '=' . $passcode . '=' . $hash;
+		$newlines[] = '*/ ?>';
+		file_put_contents('dynmap_reg.php', implode("\n", $newlines));
      }
   }
 }
 if($good) {
-   echo "{ \"result\": \"success\" }";
+   echo "{ \"result\": \"success\" }"; 
 }
 else {
-   echo "{ \"result\": \"registerfailed\" }";
+   echo "{ \"result\": \"registerfailed\" }"; 
 }
-
+   
 ?>

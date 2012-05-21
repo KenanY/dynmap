@@ -22,9 +22,12 @@ componentconstructors['testcomponent'] = function(dynmap, configuration) {
 
 function DynMap(options) {
 	var me = this;
+	if(me.checkForSavedURL())
+		return;
 	me.options = options;
 	$.getJSON(me.options.url.configuration, function(configuration) {
 		if(configuration.error == 'login-required') {
+			me.saveURL();
 			window.location = 'login.html';
 		}
 		else if(configuration.error) {	
@@ -206,8 +209,8 @@ DynMap.prototype = {
 		// World scrollbuttons
 		var upbtn_world = $('<div/>')
 		.addClass('scrollup')
-		.bind('mousedown mouseup', function(event){ 
-		    if(event.type == 'mousedown'){
+		.bind('mousedown mouseup touchstart touchend', function(event){ 
+		    if(event.type == 'mousedown' || event.type == 'touchstart'){
 				worldlist.animate({"scrollTop": "-=300px"}, 3000, 'linear');
 		    }else{
 		        worldlist.stop(); 
@@ -215,8 +218,8 @@ DynMap.prototype = {
 		});
 		var downbtn_world = $('<div/>')
 		.addClass('scrolldown')
-		.bind('mousedown mouseup', function(event){ 
-		    if(event.type == 'mousedown'){ 
+		.bind('mousedown mouseup touchstart touchend', function(event){ 
+		    if(event.type == 'mousedown' || event.type == 'touchstart'){ 
 				worldlist.animate({"scrollTop": "+=300px"}, 3000, 'linear');
 		    }else{ 
 		        worldlist.stop(); 
@@ -294,8 +297,8 @@ DynMap.prototype = {
 		// we need to show/hide them depending: if (me.playerlist.scrollHeight() > me.playerlist.innerHeight()) or something.
 		var upbtn = $('<div/>')
 		.addClass('scrollup')
-		.bind('mousedown mouseup', function(event){ 
-		    if(event.type == 'mousedown'){
+		.bind('mousedown mouseup touchstart touchend', function(event){ 
+		    if(event.type == 'mousedown' || event.type == 'touchstart'){
 				playerlist.animate({"scrollTop": "-=300px"}, 3000, 'linear');
 		    }else{
 		        playerlist.stop(); 
@@ -303,8 +306,8 @@ DynMap.prototype = {
 		});
 		var downbtn = $('<div/>')
 		.addClass('scrolldown')
-		.bind('mousedown mouseup', function(event){ 
-		    if(event.type == 'mousedown'){ 
+		.bind('mousedown mouseup touchstart touchend', function(event){ 
+		    if(event.type == 'mousedown' || event.type == 'touchstart'){ 
 				playerlist.animate({"scrollTop": "+=300px"}, 3000, 'linear');
 		    }else{ 
 		        playerlist.stop(); 
@@ -572,6 +575,7 @@ DynMap.prototype = {
 
 				if(update.error) {
 					if(update.error == 'login-required') {
+						me.saveURL();
 						window.location = 'login.html';
 					}
 					else {
@@ -672,15 +676,21 @@ DynMap.prototype = {
 		var tile = me.registeredTiles[tileName];
 		
 		if(tile == null) {
-			tile = this.registeredTiles[tileName] = me.options.tileUrl + me.world.name + '/' + tileName + '?' + me.inittime;
+			var url = me.options.url.tiles;
+			if(url.indexOf('?') > 0)
+				tile = this.registeredTiles[tileName] = url + escape(me.world.name + '/' + tileName) + '&ts=' + me.inittime;
+			else
+				tile = this.registeredTiles[tileName] = url + me.world.name + '/' + tileName + '?' + me.inittime;
 		}
 		return tile;
 	},
 	onTileUpdated: function(tileName,timestamp) {
 		var me = this;
-
-		this.registeredTiles[tileName] = me.options.tileUrl + me.world.name + '/' + tileName + '?' + timestamp;
-		
+		var url = me.options.url.tiles;
+		if(url.indexOf('?') > 0)
+			this.registeredTiles[tileName] = url + escape(me.world.name + '/' + tileName) + '&ts=' + timestamp;
+		else
+			this.registeredTiles[tileName] = url + me.world.name + '/' + tileName + '?' + timestamp;
 		me.maptype.updateNamedTile(tileName);
 	},
 	addPlayer: function(update) {
@@ -919,6 +929,7 @@ DynMap.prototype = {
 				}
 				else {
 					c = $('<button/>').addClass(cls).click(function(event) {
+						me.saveURL();
 						window.location = "login.html";
 					}).text('Login').appendTo(c)[0];
 				}				
@@ -926,5 +937,27 @@ DynMap.prototype = {
 		});
 		var l = new login();
 		me.map.addControl(l);
-	}		
+	},
+	saveURL : function() {
+		if(window.location.href.indexOf('?') > 0) {
+			document.cookie="dynmapurl=" + escape(window.location);
+		}
+	},
+	checkForSavedURL : function() {
+		var i,x,y,ourcookies=document.cookie.split(";");
+		for (i=0;i<ourcookies.length;i++) {
+  			x=ourcookies[i].substr(0,ourcookies[i].indexOf("="));
+  			y=ourcookies[i].substr(ourcookies[i].indexOf("=")+1);
+			x=x.replace(/^\s+|\s+$/g,"");
+  			if (x == "dynmapurl") {
+  				var v = unescape(y);
+  				document.cookie='dynmapurl=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
+  				if((v.indexOf('?') >= 0) && (v != window.location)) {
+					window.location = v;
+					return true;
+				}
+			}
+		}		  				
+		return false;
+    }
 };
