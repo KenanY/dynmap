@@ -25,7 +25,7 @@ if(strcmp($userid, '-guest-')) {
   $useridlc = strtolower($userid);
   if (strcasecmp($hash, $pwdhash[$useridlc]) == 0) {
      $_SESSION['userid'] = $userid;
-     $good = true; 
+     $good = true;
   }
   else {
      $_SESSION['userid'] = '-guest-';
@@ -39,35 +39,34 @@ else {
 $newlines[] = '<?php /*';
 $lines = file('dynmap_reg.php');
 if(!empty($lines)) {
-	$cnt = count($lines) - 1;
-	$changed = false;
-	for($i=1; $i < $cnt; $i++) {
-		list($uid, $pc, $hsh) = split('=', rtrim($lines[$i]));
-		if($uid == $useridlc) continue;
-		if(array_key_exists($uid, $pendingreg)) {
-			$newlines[] = $uid . '=' . $pc . '=' . $hsh;
-		}
-		else {
-			$changed = true;
-		}
-	}
-	if($changed) {
-		if(count($newlines) < 2) {	/* Nothing? */
-			unlink('dynmap_reg.php');
-		}
-		else {
-			$newlines[] = '*/ ?>';
-			file_put_contents('dynmap_reg.php', implode("\n", $newlines));
-		}
-	}
+  $cnt = count($lines) - 1;
+  $changed = false;
+  for($i=1; $i < $cnt; $i++) {
+    list($uid, $pc, $hsh) = split('=', rtrim($lines[$i]));
+    if($uid == $useridlc) continue;
+    if(array_key_exists($uid, $pendingreg)) {
+      $newlines[] = $uid . '=' . $pc . '=' . $hsh;
+    }
+    else {
+      $changed = true;
+    }
+  }
+  if($changed) {
+    if(count($newlines) < 2) {  /* Nothing? */
+      unlink('dynmap_reg.php');
+    }
+    else {
+      $newlines[] = '*/ ?>';
+      file_put_contents('dynmap_reg.php', implode("\n", $newlines));
+    }
+  }
 }
 
 if($good) {
-   echo "{ \"result\": \"success\" }"; 
+   echo "{ \"result\": \"success\" }";
 }
 else {
-   echo "{ \"result\": \"loginfailed\" }"; 
+   echo "{ \"result\": \"loginfailed\" }";
 }
- 
-?>
 
+?>
